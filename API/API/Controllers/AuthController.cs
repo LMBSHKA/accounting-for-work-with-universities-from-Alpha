@@ -18,7 +18,8 @@ public class AuthController(
     private readonly IAuthService _authService = authService;
     private readonly JwtOptions _jwtOptions = jwtOptions.Value;
 
-    [AllowAnonymous]
+	[EndpointSummary("Вход в систему")]
+	[AllowAnonymous]
     [HttpPost("login")]
     public async Task<ActionResult<AuthResponse>> Login([FromBody] LoginRequest request, CancellationToken cancellationToken)
     {
@@ -57,7 +58,8 @@ public class AuthController(
         });
     }
 
-    [Authorize]
+	[EndpointSummary("Выход")]
+	[Authorize]
     [HttpPost("logout")]
     public IActionResult Logout()
     {
@@ -72,7 +74,8 @@ public class AuthController(
         return Ok(new { message = "Logged out." });
     }
 
-    [Authorize]
+	[EndpointSummary("Запрос для теста")]
+	[Authorize]
     [HttpGet("me")]
     public ActionResult<CurrentUserResponse> Me()
     {
