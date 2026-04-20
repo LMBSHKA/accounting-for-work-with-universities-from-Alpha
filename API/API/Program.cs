@@ -111,20 +111,16 @@ internal class Program
 
 		var app = builder.Build();
 
-		if (app.Environment.IsDevelopment())
+		app.MapOpenApi();
+		app.MapScalarApiReference(options =>
 		{
-			app.MapOpenApi();
-			app.MapScalarApiReference(options =>
-			{
-				options
-					.WithTitle("Alpha API")
-					.WithTheme(ScalarTheme.BluePlanet)
-					.WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient)
-					.AddPreferredSecuritySchemes("Bearer");
-			});
-		}
+			options
+				.WithTitle("Alpha API")
+				.WithTheme(ScalarTheme.BluePlanet)
+				.WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient)
+				.AddPreferredSecuritySchemes("Bearer");
+		});
 
-		app.UseHttpsRedirection();
 		app.UseAuthentication();
 		app.UseAuthorization();
 		app.MapControllers();
