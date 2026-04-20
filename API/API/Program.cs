@@ -18,6 +18,18 @@ internal class Program
 	{
 		var builder = WebApplication.CreateBuilder(args);
 
+		//Cors
+		builder.Services.AddCors(options =>
+		{
+			options.AddDefaultPolicy(builder =>
+			{
+				builder.SetIsOriginAllowed(origin => true)
+					   .AllowAnyMethod()
+					   .AllowAnyHeader()
+					   .AllowCredentials();
+			});
+		});
+
 		builder.Services.AddControllers();
 
 		var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
