@@ -1,5 +1,6 @@
 ﻿using API.Contracts.Auth;
 using Application.Abstractions.Authentication;
+using Application.Abstractions.Authentication.Models;
 using Application.Authentication.Models;
 using Infrastructure.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -94,4 +95,46 @@ public class AuthController(
             SystemRole = User.FindFirstValue("systemRole") ?? User.FindFirstValue(ClaimTypes.Role) ?? string.Empty
         });
     }
+
+	[EndpointSummary("Тестовая регистрация пользователя")]
+	[AllowAnonymous]
+	[HttpPost("register")]
+	public async Task<ActionResult<AuthResponse>> Register([FromBody] RegisterRequest request, CancellationToken cancellationToken)
+	{
+		if (!ModelState.IsValid)
+		{
+			return ValidationProblem(ModelState);
+		}
+
+		var authResult = await _authService.RegisterAsync(new RegisterCommand
+		{
+			Email = request.Email,
+			Password = request.Password,
+			FullName = request.FullName,
+			SystemRole = request.SystemRole
+		}, cancellationToken);
+
+		if (authResult is null)
+		{
+			return Conflict(new { message = "User with this email already exists." });
+		}
+
+		Response.Cookies.Append(_jwtOptions.CookieName, authResult.Token.AccessToken, new CookieOptions
+		{
+			HttpOnly = true,
+			Secure = Request.IsHttps,
+			SameSite = SameSiteMode.Lax,
+			Expires = authResult.Token.ExpiresAtUtc,
+			IsEssential = true
+		});
+
+		return Ok(new AuthResponse
+		{
+			UserId = authResult.UserId,
+			Email = authResult.Email,
+			FullName = authResult.FullName,
+			SystemRole = authResult.SystemRole,
+			ExpiresAtUtc = authResult.Token.ExpiresAtUtc
+		});
+	}
 }

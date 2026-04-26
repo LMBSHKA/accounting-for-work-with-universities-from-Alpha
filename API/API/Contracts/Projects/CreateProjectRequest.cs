@@ -19,7 +19,6 @@ public class CreateProjectRequest
     public string? Goal { get; set; }
 
     [Required]
-    [MaxLength(100)]
     public ProjectStatus Status { get; set; }
 
     [MaxLength(4000)]
