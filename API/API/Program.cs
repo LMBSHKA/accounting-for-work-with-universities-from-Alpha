@@ -1,7 +1,9 @@
 using API.OpenApi;
 using Application.Abstractions.Authentication;
 using Application.Abstractions.Persistence;
+using Application.Abstractions.Projects;
 using Application.Authentication.Services;
+using Application.Projects.Services;
 using Infrastructure.Authentication;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.UnitOfWork;
@@ -91,6 +93,7 @@ internal class Program
 		builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 		builder.Services.AddScoped<IAuthService, AuthService>();
 		builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+		builder.Services.AddScoped<IProjectService, ProjectService>();
 
 		builder.Services.AddOpenApi(options =>
 		{

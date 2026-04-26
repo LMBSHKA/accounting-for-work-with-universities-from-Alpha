@@ -49,8 +49,12 @@ namespace infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Title = table.Column<string>(type: "character varying(250)", maxLength: 250, nullable: false),
+                    ShortTitle = table.Column<string>(type: "text", nullable: true),
                     Description = table.Column<string>(type: "text", nullable: true),
-                    Status = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Goal = table.Column<string>(type: "text", nullable: true),
+                    Status = table.Column<int>(type: "integer", maxLength: 100, nullable: false),
+                    Tasks = table.Column<string>(type: "text", nullable: true),
+                    Mvp = table.Column<string>(type: "text", nullable: true),
                     CreatedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -160,7 +164,7 @@ namespace infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     ProjectId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Status = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Status = table.Column<int>(type: "integer", maxLength: 100, nullable: false),
                     ChangedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
                     ChangeComment = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
                     ChangedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)

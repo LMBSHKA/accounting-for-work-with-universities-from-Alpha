@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260414031755_Init")]
+    [Migration("20260426183423_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -289,10 +289,21 @@ namespace infrastructure.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
+                    b.Property<string>("Goal")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Mvp")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ShortTitle")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Status")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Tasks")
+                        .HasColumnType("text");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -398,10 +409,9 @@ namespace infrastructure.Migrations
                     b.Property<Guid>("ProjectId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
+                    b.Property<int>("Status")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
