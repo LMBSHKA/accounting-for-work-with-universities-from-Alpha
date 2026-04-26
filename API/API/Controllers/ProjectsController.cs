@@ -43,4 +43,42 @@ public class ProjectsController(IProjectService projectService) : ControllerBase
 
         return Ok();
     }
+
+	[EndpointSummary("Список проектов")]
+	[HttpPost("list")]
+	public async Task<ActionResult<GetProjectsResponse>> GetProjects(
+		[FromBody] GetProjectsRequest request,
+		CancellationToken cancellationToken)
+	{
+		if (!ModelState.IsValid)
+		{
+			return ValidationProblem(ModelState);
+		}
+
+		var result = await _projectService.GetProjectsAsync(new GetProjectsQuery
+		{
+			Search = request.Search,
+			Statuses = request.Statuses,
+			Offset = request.Offset,
+			Limit = request.Limit
+		}, cancellationToken);
+
+		return Ok(new GetProjectsResponse
+		{
+			Items = result.Items.Select(project => new ProjectListItemResponse
+			{
+				Id = project.Id,
+				Title = project.Title,
+				Description = project.Description,
+				Status = project.Status,
+				TeamsCount = project.TeamsCount,
+			}).ToList(),
+			TotalCount = result.TotalCount,
+			Offset = result.Offset,
+			Limit = result.Limit,
+			LoadedCount = result.LoadedCount,
+			HasMore = result.HasMore,
+			NextOffset = result.NextOffset
+		});
+	}
 }

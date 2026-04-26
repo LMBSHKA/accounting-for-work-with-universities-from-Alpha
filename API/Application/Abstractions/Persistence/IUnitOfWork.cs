@@ -5,7 +5,7 @@ namespace Application.Abstractions.Persistence;
 public interface IUnitOfWork
 {
     IUserRepository Users { get; }
-    IRepository<Project> Projects { get; }
+    IProjectRepository Projects { get; }
     IRepository<ProjectStatusHistory> ProjectStatusHistory { get; }
     IRepository<ProjectReaction> ProjectReactions { get; }
     IRepository<ProjectComment> ProjectComments { get; }

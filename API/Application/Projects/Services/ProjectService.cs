@@ -47,7 +47,12 @@ public class ProjectService(IUnitOfWork unitOfWork) : IProjectService
         return project;
     }
 
-    private static string NormalizeRequired(string value)
+	public Task<GetProjectsResult> GetProjectsAsync(GetProjectsQuery request, CancellationToken cancellationToken = default)
+	{
+		return _unitOfWork.Projects.GetProjectsAsync(request, cancellationToken);
+	}
+
+	private static string NormalizeRequired(string value)
     {
         return value.Trim();
     }

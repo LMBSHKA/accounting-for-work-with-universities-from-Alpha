@@ -6,27 +6,28 @@ namespace Infrastructure.Persistence.UnitOfWork;
 
 public class UnitOfWork(AppDbContext dbContext) : IUnitOfWork
 {
-    private readonly AppDbContext _dbContext = dbContext;
+	private readonly AppDbContext _dbContext = dbContext;
 
-    public IUserRepository Users { get; } = new UserRepository(dbContext);
-    public IRepository<Project> Projects { get; } = new Repository<Project>(dbContext);
-    public IRepository<ProjectStatusHistory> ProjectStatusHistory { get; } = new Repository<ProjectStatusHistory>(dbContext);
-    public IRepository<ProjectReaction> ProjectReactions { get; } = new Repository<ProjectReaction>(dbContext);
-    public IRepository<ProjectComment> ProjectComments { get; } = new Repository<ProjectComment>(dbContext);
-    public IRepository<Iteration> Iterations { get; } = new Repository<Iteration>(dbContext);
-    public IRepository<Team> Teams { get; } = new Repository<Team>(dbContext);
-    public IRepository<TeamResult> TeamResults { get; } = new Repository<TeamResult>(dbContext);
-    public IRepository<Meeting> Meetings { get; } = new Repository<Meeting>(dbContext);
-    public IRepository<MeetingTask> MeetingTasks { get; } = new Repository<MeetingTask>(dbContext);
-    public IRepository<TeamMember> TeamMembers { get; } = new Repository<TeamMember>(dbContext);
-    public IRepository<StudentProfile> StudentProfiles { get; } = new Repository<StudentProfile>(dbContext);
-    public IRepository<IterationTeamScore> IterationTeamScores { get; } = new Repository<IterationTeamScore>(dbContext);
-    public IRepository<FinalTeamScore> FinalTeamScores { get; } = new Repository<FinalTeamScore>(dbContext);
-    public IRepository<IterationMemberScore> IterationMemberScores { get; } = new Repository<IterationMemberScore>(dbContext);
-    public IRepository<FinalMemberScore> FinalMemberScores { get; } = new Repository<FinalMemberScore>(dbContext);
+	public IUserRepository Users { get; } = new UserRepository(dbContext);
+	public IProjectRepository Projects { get; } = new ProjectRepository(dbContext);
+	public IRepository<ProjectStatusHistory> ProjectStatusHistory { get; } = new Repository<ProjectStatusHistory>(dbContext);
+	public IRepository<ProjectReaction> ProjectReactions { get; } = new Repository<ProjectReaction>(dbContext);
+	public IRepository<ProjectComment> ProjectComments { get; } = new Repository<ProjectComment>(dbContext);
+	public IRepository<Iteration> Iterations { get; } = new Repository<Iteration>(dbContext);
+	public IRepository<Team> Teams { get; } = new Repository<Team>(dbContext);
+	public IRepository<TeamResult> TeamResults { get; } = new Repository<TeamResult>(dbContext);
+	public IRepository<Meeting> Meetings { get; } = new Repository<Meeting>(dbContext);
+	public IRepository<MeetingTask> MeetingTasks { get; } = new Repository<MeetingTask>(dbContext);
+	public IRepository<TeamMember> TeamMembers { get; } = new Repository<TeamMember>(dbContext);
+	public IRepository<StudentProfile> StudentProfiles { get; } = new Repository<StudentProfile>(dbContext);
+	public IRepository<IterationTeamScore> IterationTeamScores { get; } = new Repository<IterationTeamScore>(dbContext);
+	public IRepository<FinalTeamScore> FinalTeamScores { get; } = new Repository<FinalTeamScore>(dbContext);
+	public IRepository<IterationMemberScore> IterationMemberScores { get; } = new Repository<IterationMemberScore>(dbContext);
+	public IRepository<FinalMemberScore> FinalMemberScores { get; } = new Repository<FinalMemberScore>(dbContext);
 
-    public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-    {
-        return _dbContext.SaveChangesAsync(cancellationToken);
-    }
+
+	public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+	{
+		return _dbContext.SaveChangesAsync(cancellationToken);
+	}
 }

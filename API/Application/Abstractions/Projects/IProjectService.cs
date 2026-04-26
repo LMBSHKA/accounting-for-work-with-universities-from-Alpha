@@ -6,4 +6,5 @@ namespace Application.Abstractions.Projects;
 public interface IProjectService
 {
     Task<Project> CreateAsync(CreateProject command, CancellationToken cancellationToken = default);
+	Task<GetProjectsResult> GetProjectsAsync(GetProjectsQuery query, CancellationToken cancellationToken = default);
 }
