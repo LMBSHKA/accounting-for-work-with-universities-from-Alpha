@@ -1,4 +1,4 @@
-using Entities.enums;
+п»їusing Entities.enums;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
@@ -20,13 +20,13 @@ public class CreateProjectRequest
     public string? Goal { get; set; }
 
 	[Description("""
-        Статус проекта.
+        РЎС‚Р°С‚СѓСЃ РїСЂРѕРµРєС‚Р°.
 
-        Значения:
-        1 — Active: активный проект.
-        2 — Rejected: отклоненный проект.
-        3 — Archived: архивный проект.
-        4 — Completed: завершенный проект.
+        Р—РЅР°С‡РµРЅРёСЏ:
+        1 вЂ” Active: Р°РєС‚РёРІРЅС‹Р№ РїСЂРѕРµРєС‚.
+        2 вЂ” Rejected: РѕС‚РєР»РѕРЅРµРЅРЅС‹Р№ РїСЂРѕРµРєС‚.
+        3 вЂ” Archived: Р°СЂС…РёРІРЅС‹Р№ РїСЂРѕРµРєС‚.
+        4 вЂ” Completed: Р·Р°РІРµСЂС€РµРЅРЅС‹Р№ РїСЂРѕРµРєС‚.
      """)]
 	[Required]
     public ProjectStatus Status { get; set; }
