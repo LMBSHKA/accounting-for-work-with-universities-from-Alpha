@@ -1,8 +1,10 @@
 using API.OpenApi;
 using Application.Abstractions.Authentication;
+using Application.Abstractions.Discussions;
 using Application.Abstractions.Persistence;
 using Application.Abstractions.Projects;
 using Application.Authentication.Services;
+using Application.Discussions.Services;
 using Application.Projects.Services;
 using Infrastructure.Authentication;
 using Infrastructure.Persistence;
@@ -10,7 +12,6 @@ using Infrastructure.Persistence.UnitOfWork;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Npgsql;
 using Scalar.AspNetCore;
 using System.Text;
 
@@ -94,6 +95,7 @@ internal class Program
 		builder.Services.AddScoped<IAuthService, AuthService>();
 		builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 		builder.Services.AddScoped<IProjectService, ProjectService>();
+		builder.Services.AddScoped<IDiscussionService, DiscussionService>();
 
 		builder.Services.AddOpenApi(options =>
 		{
