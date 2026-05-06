@@ -8,5 +8,6 @@ namespace Application.Abstractions.Persistence
 	{
 		Task<GetProjectsResult> GetProjectsAsync(GetProjectsQuery query, CancellationToken cancellationToken = default);
 		Task<GetDiscussionIdeasResult> GetDiscussionIdeasAsync(GetDiscussionIdeasQuery query, CancellationToken cancellationToken = default);
+		Task<IReadOnlyCollection<DiscussionCommentResult>> GetDiscussionCommentsAsync(Guid projectId, CancellationToken cancellationToken = default);
 	}
 }

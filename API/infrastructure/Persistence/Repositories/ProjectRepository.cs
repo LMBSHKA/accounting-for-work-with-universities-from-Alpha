@@ -91,6 +91,26 @@ public class ProjectRepository(AppDbContext dbContext) : Repository<Project>(dbC
 		};
 	}
 
+	public async Task<IReadOnlyCollection<DiscussionCommentResult>> GetDiscussionCommentsAsync(Guid projectId, CancellationToken cancellationToken = default)
+	{
+		return await DbContext.ProjectComments
+			.AsNoTracking()
+			.Where(comment => comment.ProjectId == projectId)
+			.OrderBy(comment => comment.CreatedAt)
+			.Select(comment => new DiscussionCommentResult
+			{
+				Id = comment.Id,
+				ProjectId = comment.ProjectId,
+				UserId = comment.UserId,
+				AuthorFullName = comment.User == null ? null : comment.User.FullName,
+				ParentCommentId = comment.ParentCommentId,
+				CommentBody = comment.CommentBody,
+				CreatedAt = comment.CreatedAt,
+				UpdatedAt = comment.UpdatedAt
+			})
+			.ToListAsync(cancellationToken);
+	}
+
 	private static IQueryable<Project> ApplyProjectListFilters(
 		IQueryable<Project> query,
 		string? search,
