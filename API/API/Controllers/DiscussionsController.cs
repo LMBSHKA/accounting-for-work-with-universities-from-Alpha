@@ -239,6 +239,8 @@ public class DiscussionsController(IDiscussionService discussionService) : Contr
 			CommentBody = comment.CommentBody,
 			CreatedAt = comment.CreatedAt,
 			UpdatedAt = comment.UpdatedAt,
+			LikeReactionsCount = comment.LikeReactionsCount,
+			DislikeReactionsCount = comment.DislikeReactionsCount,
 			Replies = comment.Replies.Select(MapComment).ToList()
 		};
 	}
