@@ -1,6 +1,7 @@
 using Application.Abstractions.Persistence;
 using Application.Discussions.Models;
 using Application.Projects.Models;
+using Entities.enums;
 using Entities.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -64,16 +65,8 @@ public class ProjectRepository(AppDbContext dbContext) : Repository<Project>(dbC
 				Title = project.Title,
 				Status = project.Status,
 				AuthorFullName = project.CreatedByUser == null ? null : project.CreatedByUser.FullName,
-				LikeReactionsCount = project.Reactions.Count(reaction =>
-					reaction.Status.ToLower() == "like" ||
-					reaction.Status.ToLower() == "liked" ||
-					reaction.Status.ToLower() == "up" ||
-					reaction.Status.ToLower() == "positive"),
-				DislikeReactionsCount = project.Reactions.Count(reaction =>
-					reaction.Status.ToLower() == "dislike" ||
-					reaction.Status.ToLower() == "disliked" ||
-					reaction.Status.ToLower() == "down" ||
-					reaction.Status.ToLower() == "negative"),
+				LikeReactionsCount = project.Reactions.Count(reaction => reaction.ReactionType == ReactionType.Like),
+				DislikeReactionsCount = project.Reactions.Count(reaction => reaction.ReactionType == ReactionType.Dislike),
 			})
 			.ToListAsync(cancellationToken);
 
@@ -109,6 +102,23 @@ public class ProjectRepository(AppDbContext dbContext) : Repository<Project>(dbC
 				UpdatedAt = comment.UpdatedAt
 			})
 			.ToListAsync(cancellationToken);
+	}
+
+
+	public async Task<ProjectReaction?> GetProjectReactionAsync(Guid projectId, Guid userId, CancellationToken cancellationToken = default)
+	{
+		return await DbContext.ProjectReactions
+			.FirstOrDefaultAsync(reaction =>
+				reaction.ProjectId == projectId &&
+				reaction.CreatedByUserId == userId, cancellationToken);
+	}
+
+	public async Task<ProjectCommentReaction?> GetProjectCommentReactionAsync(Guid projectCommentId, Guid userId, CancellationToken cancellationToken = default)
+	{
+		return await DbContext.ProjectCommentReactions
+			.FirstOrDefaultAsync(reaction =>
+				reaction.ProjectCommentId == projectCommentId &&
+				reaction.UserId == userId, cancellationToken);
 	}
 
 	private static IQueryable<Project> ApplyProjectListFilters(

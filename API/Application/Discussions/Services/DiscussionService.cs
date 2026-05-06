@@ -77,6 +77,107 @@ public class DiscussionService(IUnitOfWork unitOfWork) : IDiscussionService
 		};
 	}
 
+
+	public async Task<bool> SetProjectReactionAsync(SetProjectReactionCommand command, CancellationToken cancellationToken = default)
+	{
+		var project = await _unitOfWork.Projects.GetByIdAsync(command.ProjectId, cancellationToken);
+		if (project is null)
+		{
+			return false;
+		}
+
+		var reaction = await _unitOfWork.Projects.GetProjectReactionAsync(command.ProjectId, command.UserId, cancellationToken);
+		if (reaction is null)
+		{
+			reaction = new ProjectReaction
+			{
+				Id = Guid.NewGuid(),
+				ProjectId = command.ProjectId,
+				CreatedByUserId = command.UserId,
+				ReactionType = command.ReactionType,
+				CreatedAt = DateTime.UtcNow
+			};
+
+			await _unitOfWork.ProjectReactions.AddAsync(reaction, cancellationToken);
+		}
+		else if (reaction.ReactionType != command.ReactionType)
+		{
+			reaction.ReactionType = command.ReactionType;
+			_unitOfWork.ProjectReactions.Update(reaction);
+		}
+
+		await _unitOfWork.SaveChangesAsync(cancellationToken);
+		return true;
+	}
+
+	public async Task<bool> DeleteProjectReactionAsync(Guid projectId, Guid userId, CancellationToken cancellationToken = default)
+	{
+		var project = await _unitOfWork.Projects.GetByIdAsync(projectId, cancellationToken);
+		if (project is null)
+		{
+			return false;
+		}
+
+		var reaction = await _unitOfWork.Projects.GetProjectReactionAsync(projectId, userId, cancellationToken);
+		if (reaction is not null)
+		{
+			_unitOfWork.ProjectReactions.Remove(reaction);
+			await _unitOfWork.SaveChangesAsync(cancellationToken);
+		}
+
+		return true;
+	}
+
+	public async Task<bool> SetProjectCommentReactionAsync(SetProjectCommentReactionCommand command, CancellationToken cancellationToken = default)
+	{
+		var comment = await _unitOfWork.ProjectComments.GetByIdAsync(command.ProjectCommentId, cancellationToken);
+		if (comment is null)
+		{
+			return false;
+		}
+
+		var reaction = await _unitOfWork.Projects.GetProjectCommentReactionAsync(command.ProjectCommentId, command.UserId, cancellationToken);
+		if (reaction is null)
+		{
+			reaction = new ProjectCommentReaction
+			{
+				Id = Guid.NewGuid(),
+				ProjectCommentId = command.ProjectCommentId,
+				UserId = command.UserId,
+				ReactionType = command.ReactionType,
+				CreatedAt = DateTime.UtcNow
+			};
+
+			await _unitOfWork.ProjectCommentReactions.AddAsync(reaction, cancellationToken);
+		}
+		else if (reaction.ReactionType != command.ReactionType)
+		{
+			reaction.ReactionType = command.ReactionType;
+			_unitOfWork.ProjectCommentReactions.Update(reaction);
+		}
+
+		await _unitOfWork.SaveChangesAsync(cancellationToken);
+		return true;
+	}
+
+	public async Task<bool> DeleteProjectCommentReactionAsync(Guid projectCommentId, Guid userId, CancellationToken cancellationToken = default)
+	{
+		var comment = await _unitOfWork.ProjectComments.GetByIdAsync(projectCommentId, cancellationToken);
+		if (comment is null)
+		{
+			return false;
+		}
+
+		var reaction = await _unitOfWork.Projects.GetProjectCommentReactionAsync(projectCommentId, userId, cancellationToken);
+		if (reaction is not null)
+		{
+			_unitOfWork.ProjectCommentReactions.Remove(reaction);
+			await _unitOfWork.SaveChangesAsync(cancellationToken);
+		}
+
+		return true;
+	}
+
 	private static IReadOnlyCollection<DiscussionCommentResult> BuildCommentTree(IReadOnlyCollection<DiscussionCommentResult> comments)
 	{
 		var map = comments.ToDictionary(comment => comment.Id);

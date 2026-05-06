@@ -1,6 +1,7 @@
 using API.Contracts.Discussions;
 using Application.Abstractions.Discussions;
 using Application.Discussions.Models;
+using Entities.enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -84,8 +85,7 @@ public class DiscussionsController(IDiscussionService discussionService) : Contr
 			return ValidationProblem(ModelState);
 		}
 
-		var userIdValue = User.FindFirstValue("userId") ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
-		if (!Guid.TryParse(userIdValue, out var userId))
+		if (!TryGetCurrentUserId(out var userId))
 		{
 			return Unauthorized(new { message = "User identifier claim is missing." });
 		}
@@ -104,6 +104,127 @@ public class DiscussionsController(IDiscussionService discussionService) : Contr
 		}
 
 		return Ok(MapComment(comment));
+	}
+
+
+	[EndpointSummary("Установка реакции текущего пользователя на идею")]
+	[HttpPost("{projectId:guid}/reaction")]
+	public async Task<IActionResult> SetProjectReaction(
+		Guid projectId,
+		[FromBody] SetDiscussionReactionRequest request,
+		CancellationToken cancellationToken)
+	{
+		if (!ModelState.IsValid)
+		{
+			return ValidationProblem(ModelState);
+		}
+
+		if (!TryGetCurrentUserId(out var userId))
+		{
+			return Unauthorized(new { message = "User identifier claim is missing." });
+		}
+
+		if (!Enum.IsDefined(typeof(ReactionType), request.ReactionType))
+		{
+			return BadRequest(new { message = "ReactionType must be 1 (Like) or 2 (Dislike)." });
+		}
+
+		var isSuccess = await _discussionService.SetProjectReactionAsync(new SetProjectReactionCommand
+		{
+			ProjectId = projectId,
+			UserId = userId,
+			ReactionType = (ReactionType)request.ReactionType
+		}, cancellationToken);
+
+		if (!isSuccess)
+		{
+			return NotFound(new { message = "Idea was not found." });
+		}
+
+		return NoContent();
+	}
+
+	[EndpointSummary("Удаление реакции текущего пользователя с идеи")]
+	[HttpDelete("{projectId:guid}/reaction")]
+	public async Task<IActionResult> DeleteProjectReaction(
+		Guid projectId,
+		CancellationToken cancellationToken)
+	{
+		if (!TryGetCurrentUserId(out var userId))
+		{
+			return Unauthorized(new { message = "User identifier claim is missing." });
+		}
+
+		var isSuccess = await _discussionService.DeleteProjectReactionAsync(projectId, userId, cancellationToken);
+		if (!isSuccess)
+		{
+			return NotFound(new { message = "Idea was not found." });
+		}
+
+		return NoContent();
+	}
+
+	[EndpointSummary("Установка реакции текущего пользователя на комментарий")]
+	[HttpPost("comments/{commentId:guid}/reaction")]
+	public async Task<IActionResult> SetCommentReaction(
+		Guid commentId,
+		[FromBody] SetDiscussionReactionRequest request,
+		CancellationToken cancellationToken)
+	{
+		if (!ModelState.IsValid)
+		{
+			return ValidationProblem(ModelState);
+		}
+
+		if (!TryGetCurrentUserId(out var userId))
+		{
+			return Unauthorized(new { message = "User identifier claim is missing." });
+		}
+
+		if (!Enum.IsDefined(typeof(ReactionType), request.ReactionType))
+		{
+			return BadRequest(new { message = "ReactionType must be 1 (Like) or 2 (Dislike)." });
+		}
+
+		var isSuccess = await _discussionService.SetProjectCommentReactionAsync(new SetProjectCommentReactionCommand
+		{
+			ProjectCommentId = commentId,
+			UserId = userId,
+			ReactionType = (ReactionType)request.ReactionType
+		}, cancellationToken);
+
+		if (!isSuccess)
+		{
+			return NotFound(new { message = "Comment was not found." });
+		}
+
+		return NoContent();
+	}
+
+	[EndpointSummary("Удаление реакции текущего пользователя с комментария")]
+	[HttpDelete("comments/{commentId:guid}/reaction")]
+	public async Task<IActionResult> DeleteCommentReaction(
+		Guid commentId,
+		CancellationToken cancellationToken)
+	{
+		if (!TryGetCurrentUserId(out var userId))
+		{
+			return Unauthorized(new { message = "User identifier claim is missing." });
+		}
+
+		var isSuccess = await _discussionService.DeleteProjectCommentReactionAsync(commentId, userId, cancellationToken);
+		if (!isSuccess)
+		{
+			return NotFound(new { message = "Comment was not found." });
+		}
+
+		return NoContent();
+	}
+
+	private bool TryGetCurrentUserId(out Guid userId)
+	{
+		var userIdValue = User.FindFirstValue("userId") ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
+		return Guid.TryParse(userIdValue, out userId);
 	}
 
 	private static DiscussionCommentResponse MapComment(DiscussionCommentResult comment)
