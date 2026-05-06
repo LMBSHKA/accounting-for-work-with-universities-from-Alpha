@@ -84,7 +84,9 @@ public class ProjectRepository(AppDbContext dbContext) : Repository<Project>(dbC
 		};
 	}
 
-	public async Task<IReadOnlyCollection<DiscussionCommentResult>> GetDiscussionCommentsAsync(Guid projectId, CancellationToken cancellationToken = default)
+	public async Task<IReadOnlyCollection<DiscussionCommentResult>> GetDiscussionCommentsAsync(
+	Guid projectId,
+	CancellationToken cancellationToken = default)
 	{
 		return await DbContext.ProjectComments
 			.AsNoTracking()
@@ -99,7 +101,9 @@ public class ProjectRepository(AppDbContext dbContext) : Repository<Project>(dbC
 				ParentCommentId = comment.ParentCommentId,
 				CommentBody = comment.CommentBody,
 				CreatedAt = comment.CreatedAt,
-				UpdatedAt = comment.UpdatedAt
+				UpdatedAt = comment.UpdatedAt,
+				LikeReactionsCount = comment.Reactions.Count(reaction => reaction.ReactionType == ReactionType.Like),
+				DislikeReactionsCount = comment.Reactions.Count(reaction => reaction.ReactionType == ReactionType.Dislike)
 			})
 			.ToListAsync(cancellationToken);
 	}
