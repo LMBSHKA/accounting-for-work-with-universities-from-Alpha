@@ -3,9 +3,11 @@ using Application.Abstractions.Authentication;
 using Application.Abstractions.Discussions;
 using Application.Abstractions.Persistence;
 using Application.Abstractions.Projects;
+using Application.Abstractions.Students;
 using Application.Authentication.Services;
 using Application.Discussions.Services;
 using Application.Projects.Services;
+using Application.Students.Services;
 using Infrastructure.Authentication;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.UnitOfWork;
@@ -96,6 +98,7 @@ internal class Program
 		builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 		builder.Services.AddScoped<IProjectService, ProjectService>();
 		builder.Services.AddScoped<IDiscussionService, DiscussionService>();
+		builder.Services.AddScoped<IStudentService, StudentService>();
 
 		builder.Services.AddOpenApi(options =>
 		{
