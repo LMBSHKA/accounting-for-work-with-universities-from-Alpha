@@ -11,7 +11,7 @@ public interface IUnitOfWork
 	IRepository<ProjectComment> ProjectComments { get; }
 	IRepository<ProjectCommentReaction> ProjectCommentReactions { get; }
 	IRepository<Iteration> Iterations { get; }
-	IRepository<Team> Teams { get; }
+	ITeamRepository Teams { get; }
 	IRepository<TeamResult> TeamResults { get; }
 	IRepository<Meeting> Meetings { get; }
 	IRepository<MeetingTask> MeetingTasks { get; }

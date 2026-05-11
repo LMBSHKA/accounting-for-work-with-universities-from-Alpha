@@ -15,7 +15,7 @@ public class UnitOfWork(AppDbContext dbContext) : IUnitOfWork
 	public IRepository<ProjectComment> ProjectComments { get; } = new Repository<ProjectComment>(dbContext);
 	public IRepository<ProjectCommentReaction> ProjectCommentReactions { get; } = new Repository<ProjectCommentReaction>(dbContext);
 	public IRepository<Iteration> Iterations { get; } = new Repository<Iteration>(dbContext);
-	public IRepository<Team> Teams { get; } = new Repository<Team>(dbContext);
+	public ITeamRepository Teams { get; } = new TeamRepository(dbContext);
 	public IRepository<TeamResult> TeamResults { get; } = new Repository<TeamResult>(dbContext);
 	public IRepository<Meeting> Meetings { get; } = new Repository<Meeting>(dbContext);
 	public IRepository<MeetingTask> MeetingTasks { get; } = new Repository<MeetingTask>(dbContext);

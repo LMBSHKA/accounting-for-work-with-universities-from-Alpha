@@ -47,6 +47,95 @@ public class StudentsController(IStudentService studentService) : ControllerBase
 		});
 	}
 
+
+	[EndpointSummary("Список студентов")]
+	[HttpPost("list")]
+	public async Task<ActionResult<GetStudentsResponse>> GetStudents(
+		[FromBody] GetStudentsRequest request,
+		CancellationToken cancellationToken)
+	{
+		if (!ModelState.IsValid)
+		{
+			return ValidationProblem(ModelState);
+		}
+
+		var result = await _studentService.GetStudentsAsync(new GetStudentsQuery
+		{
+			Search = request.Search,
+			Filter = request.Filter,
+			Offset = request.Offset,
+			Limit = request.Limit
+		}, cancellationToken);
+
+		return Ok(new GetStudentsResponse
+		{
+			Items = result.Items.Select(student => new StudentListItemResponse
+			{
+				Id = student.Id,
+				FullName = student.FullName,
+				Email = student.Email,
+				RoleInTeam = student.RoleInTeam,
+				TeamNames = student.TeamNames,
+				UpdatedAt = student.UpdatedAt
+			}).ToList(),
+			TotalCount = result.TotalCount,
+			Offset = result.Offset,
+			Limit = result.Limit,
+			LoadedCount = result.LoadedCount,
+			HasMore = result.HasMore,
+			NextOffset = result.NextOffset
+		});
+	}
+
+	[EndpointSummary("Список команд")]
+	[HttpPost("team/list")]
+	public async Task<ActionResult<GetTeamsResponse>> GetTeams(
+		[FromBody] GetTeamsRequest request,
+		CancellationToken cancellationToken)
+	{
+		if (!ModelState.IsValid)
+		{
+			return ValidationProblem(ModelState);
+		}
+
+		var result = await _studentService.GetTeamsAsync(new GetTeamsQuery
+		{
+			Search = request.Search,
+			Filter = request.Filter,
+			Offset = request.Offset,
+			Limit = request.Limit
+		}, cancellationToken);
+
+		return Ok(new GetTeamsResponse
+		{
+			Items = result.Items.Select(team => new TeamListItemResponse
+			{
+				Id = team.Id,
+				ProjectId = team.ProjectId,
+				ProjectTitle = team.ProjectTitle,
+				ProjectStatus = team.ProjectStatus,
+				Name = team.Name,
+				Skills = team.Skills,
+				CreatedAt = team.CreatedAt,
+				UpdatedAt = team.UpdatedAt,
+				Members = team.Members.Select(member => new TeamMemberResponse
+				{
+					Id = member.Id,
+					StudentProfileId = member.StudentProfileId,
+					FullName = member.FullName,
+					Email = member.Email,
+					RoleInTeam = member.RoleInTeam
+				}).ToList()
+			}).ToList(),
+			TotalCount = result.TotalCount,
+			Offset = result.Offset,
+			Limit = result.Limit,
+			LoadedCount = result.LoadedCount,
+			HasMore = result.HasMore,
+			NextOffset = result.NextOffset
+		});
+	}
+
 	[EndpointSummary("Создание команды")]
 	[HttpPost("team")]
 	public async Task<ActionResult<TeamResponse>> CreateTeam(
