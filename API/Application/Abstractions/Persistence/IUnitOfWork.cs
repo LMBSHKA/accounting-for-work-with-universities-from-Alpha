@@ -16,7 +16,7 @@ public interface IUnitOfWork
 	IRepository<Meeting> Meetings { get; }
 	IRepository<MeetingTask> MeetingTasks { get; }
 	IRepository<TeamMember> TeamMembers { get; }
-	IRepository<StudentProfile> StudentProfiles { get; }
+	IStudentProfileRepository StudentProfiles { get; }
 	IRepository<IterationTeamScore> IterationTeamScores { get; }
 	IRepository<FinalTeamScore> FinalTeamScores { get; }
 	IRepository<IterationMemberScore> IterationMemberScores { get; }

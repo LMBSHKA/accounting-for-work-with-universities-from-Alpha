@@ -20,7 +20,7 @@ public class UnitOfWork(AppDbContext dbContext) : IUnitOfWork
 	public IRepository<Meeting> Meetings { get; } = new Repository<Meeting>(dbContext);
 	public IRepository<MeetingTask> MeetingTasks { get; } = new Repository<MeetingTask>(dbContext);
 	public IRepository<TeamMember> TeamMembers { get; } = new Repository<TeamMember>(dbContext);
-	public IRepository<StudentProfile> StudentProfiles { get; } = new Repository<StudentProfile>(dbContext);
+	public IStudentProfileRepository StudentProfiles { get; } = new StudentProfileRepository(dbContext);
 	public IRepository<IterationTeamScore> IterationTeamScores { get; } = new Repository<IterationTeamScore>(dbContext);
 	public IRepository<FinalTeamScore> FinalTeamScores { get; } = new Repository<FinalTeamScore>(dbContext);
 	public IRepository<IterationMemberScore> IterationMemberScores { get; } = new Repository<IterationMemberScore>(dbContext);
