@@ -19,19 +19,24 @@ using System.Text;
 
 internal class Program
 {
+	private const string CorsPolicyName = "FrontendCors";
+
 	private static void Main(string[] args)
 	{
 		var builder = WebApplication.CreateBuilder(args);
 
-		//Cors
 		builder.Services.AddCors(options =>
 		{
-			options.AddDefaultPolicy(builder =>
+			options.AddPolicy(CorsPolicyName, policy =>
 			{
-				builder.SetIsOriginAllowed(origin => true)
-					   .AllowAnyMethod()
-					   .AllowAnyHeader()
-					   .AllowCredentials();
+				policy
+					.WithOrigins(
+						"http://localhost:5173",
+						"http://127.0.0.1:5173"
+					)
+					.AllowAnyMethod()
+					.AllowAnyHeader()
+					.AllowCredentials();
 			});
 		});
 
@@ -58,12 +63,16 @@ internal class Program
 				{
 					ValidateIssuer = true,
 					ValidIssuer = jwtOptions.Issuer,
+
 					ValidateAudience = true,
 					ValidAudience = jwtOptions.Audience,
+
 					ValidateIssuerSigningKey = true,
 					IssuerSigningKey = signingKey,
+
 					ValidateLifetime = true,
 					ClockSkew = TimeSpan.Zero,
+
 					NameClaimType = "userId",
 					RoleClaimType = "systemRole"
 				};
@@ -73,6 +82,7 @@ internal class Program
 					OnMessageReceived = context =>
 					{
 						var authorizationHeader = context.Request.Headers.Authorization.ToString();
+
 						if (!string.IsNullOrWhiteSpace(authorizationHeader) &&
 							authorizationHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
 						{
@@ -104,6 +114,7 @@ internal class Program
 		{
 			options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
 			options.AddOperationTransformer<AuthOperationTransformer>();
+
 			options.AddDocumentTransformer((document, _, _) =>
 			{
 				document.Info = new Microsoft.OpenApi.Models.OpenApiInfo
@@ -120,6 +131,7 @@ internal class Program
 		var app = builder.Build();
 
 		app.MapOpenApi();
+
 		app.MapScalarApiReference(options =>
 		{
 			options
@@ -129,8 +141,11 @@ internal class Program
 				.AddPreferredSecuritySchemes("Bearer");
 		});
 
+		app.UseCors(CorsPolicyName);
+
 		app.UseAuthentication();
 		app.UseAuthorization();
+
 		app.MapControllers();
 
 		app.Run();
