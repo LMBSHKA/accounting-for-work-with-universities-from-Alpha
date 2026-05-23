@@ -36,4 +36,9 @@ public class CreateProjectRequest
 
     [MaxLength(4000)]
     public string? Mvp { get; set; }
+
+    [MaxLength(4000)]
+    public string? EvaluationCriteria { get; set; }
+
+    public DateOnly? Deadline { get; set; }
 }

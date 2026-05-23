@@ -7,6 +7,7 @@ public class Iteration
     public string Name { get; set; } = string.Empty;
     public DateOnly StartOn { get; set; }
     public DateOnly EndOn { get; set; }
+    public string? EvaluationCriteria { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
 

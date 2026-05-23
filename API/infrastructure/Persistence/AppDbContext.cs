@@ -188,6 +188,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 			entity.HasKey(e => e.Id);
 
 			entity.Property(e => e.Name).HasMaxLength(200).IsRequired();
+			entity.Property(e => e.EvaluationCriteria).HasMaxLength(4000);
 
 			entity.HasOne(e => e.Project)
 				.WithMany(p => p.Iterations)
@@ -255,6 +256,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 			entity.ToTable("Meetings");
 			entity.HasKey(e => e.Id);
 
+			entity.Property(e => e.Title).HasMaxLength(250).IsRequired();
+			entity.Property(e => e.Description).HasMaxLength(4000);
+			entity.Property(e => e.Location).HasMaxLength(500);
 			entity.Property(e => e.ConnectionLink).HasMaxLength(1024);
 
 			entity.HasOne(e => e.Team)

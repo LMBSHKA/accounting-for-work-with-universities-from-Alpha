@@ -38,6 +38,8 @@ public class ProjectsController(IProjectService projectService) : ControllerBase
             Status = request.Status,
             Tasks = request.Tasks,
             Mvp = request.Mvp,
+            EvaluationCriteria = request.EvaluationCriteria,
+            Deadline = request.Deadline,
             CreatedByUserId = userId
         }, cancellationToken);
 
@@ -70,6 +72,10 @@ public class ProjectsController(IProjectService projectService) : ControllerBase
 				Id = project.Id,
 				Title = project.Title,
 				Description = project.Description,
+				Goal = project.Goal,
+				Mvp = project.Mvp,
+				EvaluationCriteria = project.EvaluationCriteria,
+				Deadline = project.Deadline,
 				Status = project.Status,
 				TeamsCount = project.TeamsCount,
 			}).ToList(),
@@ -81,4 +87,52 @@ public class ProjectsController(IProjectService projectService) : ControllerBase
 			NextOffset = result.NextOffset
 		});
 	}
+	/// <summary>
+	/// Завершение проекта со страницы команды.
+	/// После вызова статус проекта становится 4 — Completed.
+	/// </summary>
+	[EndpointSummary("Завершение проекта")]
+	[HttpPost("{projectId:guid}/complete")]
+	public async Task<IActionResult> CompleteProject(Guid projectId, CancellationToken cancellationToken)
+	{
+		var userIdValue = User.FindFirstValue("userId") ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
+		if (!Guid.TryParse(userIdValue, out var userId))
+		{
+			return Unauthorized(new { message = "User identifier claim is missing." });
+		}
+
+		var isSuccess = await _projectService.CompleteProjectAsync(projectId, userId, cancellationToken);
+		if (!isSuccess)
+		{
+			return NotFound(new { message = "Project was not found." });
+		}
+
+		return NoContent();
+	}
+
+	/// <summary>
+	/// История изменения статусов проекта для кнопки "Посмотреть историю".
+	/// </summary>
+	[EndpointSummary("История статусов проекта")]
+	[HttpGet("{projectId:guid}/status-history")]
+	public async Task<ActionResult<List<ProjectStatusHistoryResponse>>> GetStatusHistory(Guid projectId, CancellationToken cancellationToken)
+	{
+		var history = await _projectService.GetStatusHistoryAsync(projectId, cancellationToken);
+		if (history is null)
+		{
+			return NotFound(new { message = "Project was not found." });
+		}
+
+		return Ok(history.Select(item => new ProjectStatusHistoryResponse
+		{
+			Id = item.Id,
+			ProjectId = item.ProjectId,
+			Status = item.Status,
+			ChangedByUserId = item.ChangedByUserId,
+			ChangedByUserFullName = item.ChangedByUserFullName,
+			ChangeComment = item.ChangeComment,
+			ChangedAt = item.ChangedAt
+		}).ToList());
+	}
+
 }

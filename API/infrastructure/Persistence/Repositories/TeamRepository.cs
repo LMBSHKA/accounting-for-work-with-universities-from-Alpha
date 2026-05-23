@@ -13,7 +13,7 @@ public class TeamRepository(AppDbContext dbContext) : Repository<Team>(dbContext
 		var offset = Math.Max(0, request.Offset);
 		var limit = Math.Clamp(request.Limit, 1, 100);
 
-		var query = ApplyTeamListFilters(DbSet.AsNoTracking(), request.Search, request.Filter);
+		var query = ApplyTeamListFilters(DbSet.AsNoTracking(), request.Search, request.Filter, request.ProjectId);
 		var totalCount = await query.CountAsync(cancellationToken);
 
 		var teams = await query
@@ -59,11 +59,71 @@ public class TeamRepository(AppDbContext dbContext) : Repository<Team>(dbContext
 		};
 	}
 
+	public async Task<TeamDetailsResult?> GetTeamDetailsAsync(Guid teamId, CancellationToken cancellationToken = default)
+	{
+		return await DbContext.Teams
+			.AsNoTracking()
+			.Where(team => team.Id == teamId)
+			.Select(team => new TeamDetailsResult
+			{
+				Id = team.Id,
+				ProjectId = team.ProjectId,
+				Name = team.Name,
+				Skills = team.Skills,
+				CreatedAt = team.CreatedAt,
+				UpdatedAt = team.UpdatedAt,
+				Project = team.Project == null
+					? new TeamProjectDetailsResult()
+					: new TeamProjectDetailsResult
+					{
+						Id = team.Project.Id,
+						Title = team.Project.Title,
+						Description = team.Project.Description,
+						Goal = team.Project.Goal,
+						Mvp = team.Project.Mvp,
+						EvaluationCriteria = team.Project.Tasks,
+						Deadline = team.Project.Deadline,
+						Status = team.Project.Status,
+						TeamsCount = team.Project.Teams.Count
+					},
+				Members = team.Members
+					.OrderBy(member => member.StudentsProfile == null ? string.Empty : member.StudentsProfile.FullName)
+					.Select(member => new TeamMemberResult
+					{
+						Id = member.Id,
+						StudentProfileId = member.StudentsProfileId,
+						FullName = member.StudentsProfile == null ? string.Empty : member.StudentsProfile.FullName,
+						Email = member.StudentsProfile == null ? string.Empty : member.StudentsProfile.Email,
+						RoleInTeam = member.StudentsProfile == null ? null : member.StudentsProfile.RoleInTeam
+					})
+					.ToList(),
+				Iterations = team.Project == null
+					? new List<TeamIterationResult>()
+					: team.Project.Iterations
+						.OrderBy(iteration => iteration.StartOn)
+						.Select(iteration => new TeamIterationResult
+						{
+							Id = iteration.Id,
+							Name = iteration.Name,
+							StartOn = iteration.StartOn,
+							EndOn = iteration.EndOn
+						})
+						.ToList()
+			})
+			.FirstOrDefaultAsync(cancellationToken);
+	}
+
 	private static IQueryable<Team> ApplyTeamListFilters(
 		IQueryable<Team> query,
 		string? search,
-		TeamListFilter filter)
+		TeamListFilter filter,
+		Guid? projectId)
 	{
+		if (projectId.HasValue)
+		{
+			query = query.Where(team => team.ProjectId == projectId.Value);
+		}
+
 		if (!string.IsNullOrWhiteSpace(search))
 		{
 			var normalizedSearch = search.Trim().ToLower();

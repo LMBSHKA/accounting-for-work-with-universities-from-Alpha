@@ -24,6 +24,9 @@ public class GetTeamsRequest
 	""")]
 	public string? Search { get; set; }
 
+	[Description("Необязательный фильтр по проекту. Используется на форме назначения встречи после выбора проекта.")]
+	public Guid? ProjectId { get; set; }
+
 	[Description("""
 	Фильтр команд.
 

@@ -8,4 +8,5 @@ public interface IStudentService
 	Task<Application.Students.Models.TeamResult?> CreateTeamAsync(CreateTeamCommand command, CancellationToken cancellationToken = default);
 	Task<GetStudentsResult> GetStudentsAsync(GetStudentsQuery query, CancellationToken cancellationToken = default);
 	Task<GetTeamsResult> GetTeamsAsync(GetTeamsQuery query, CancellationToken cancellationToken = default);
+	Task<TeamDetailsResult?> GetTeamDetailsAsync(Guid teamId, CancellationToken cancellationToken = default);
 }

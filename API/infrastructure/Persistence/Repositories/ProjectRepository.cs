@@ -27,6 +27,10 @@ public class ProjectRepository(AppDbContext dbContext) : Repository<Project>(dbC
 				Id = project.Id,
 				Title = project.Title,
 				Description = project.Description,
+				Goal = project.Goal,
+				Mvp = project.Mvp,
+				EvaluationCriteria = project.Tasks,
+				Deadline = project.Deadline,
 				Status = project.Status,
 				TeamsCount = project.Teams.Count,
 			})
@@ -44,6 +48,25 @@ public class ProjectRepository(AppDbContext dbContext) : Repository<Project>(dbC
 			HasMore = loadedCount < totalCount,
 			NextOffset = loadedCount < totalCount ? loadedCount : null
 		};
+	}
+
+	public async Task<IReadOnlyCollection<ProjectStatusHistoryResult>> GetStatusHistoryAsync(Guid projectId, CancellationToken cancellationToken = default)
+	{
+		return await DbContext.ProjectStatusHistory
+			.AsNoTracking()
+			.Where(history => history.ProjectId == projectId)
+			.OrderByDescending(history => history.ChangedAt)
+			.Select(history => new ProjectStatusHistoryResult
+			{
+				Id = history.Id,
+				ProjectId = history.ProjectId,
+				Status = history.Status,
+				ChangedByUserId = history.ChangedByUserId,
+				ChangedByUserFullName = history.ChangedByUser == null ? null : history.ChangedByUser.FullName,
+				ChangeComment = history.ChangeComment,
+				ChangedAt = history.ChangedAt
+			})
+			.ToListAsync(cancellationToken);
 	}
 
 	public async Task<GetDiscussionIdeasResult> GetDiscussionIdeasAsync(GetDiscussionIdeasQuery request, CancellationToken cancellationToken = default)

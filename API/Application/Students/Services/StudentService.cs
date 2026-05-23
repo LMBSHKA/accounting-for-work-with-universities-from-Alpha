@@ -126,6 +126,11 @@ public class StudentService(IUnitOfWork unitOfWork) : IStudentService
 		return _unitOfWork.Teams.GetTeamsAsync(query, cancellationToken);
 	}
 
+	public Task<TeamDetailsResult?> GetTeamDetailsAsync(Guid teamId, CancellationToken cancellationToken = default)
+	{
+		return _unitOfWork.Teams.GetTeamDetailsAsync(teamId, cancellationToken);
+	}
+
 	private static StudentResult Map(StudentProfile student)
 	{
 		return new StudentResult

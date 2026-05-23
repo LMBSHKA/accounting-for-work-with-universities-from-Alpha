@@ -14,10 +14,10 @@ public class UnitOfWork(AppDbContext dbContext) : IUnitOfWork
 	public IRepository<ProjectReaction> ProjectReactions { get; } = new Repository<ProjectReaction>(dbContext);
 	public IRepository<ProjectComment> ProjectComments { get; } = new Repository<ProjectComment>(dbContext);
 	public IRepository<ProjectCommentReaction> ProjectCommentReactions { get; } = new Repository<ProjectCommentReaction>(dbContext);
-	public IRepository<Iteration> Iterations { get; } = new Repository<Iteration>(dbContext);
+	public IIterationRepository Iterations { get; } = new IterationRepository(dbContext);
 	public ITeamRepository Teams { get; } = new TeamRepository(dbContext);
 	public IRepository<TeamResult> TeamResults { get; } = new Repository<TeamResult>(dbContext);
-	public IRepository<Meeting> Meetings { get; } = new Repository<Meeting>(dbContext);
+	public IMeetingRepository Meetings { get; } = new MeetingRepository(dbContext);
 	public IRepository<MeetingTask> MeetingTasks { get; } = new Repository<MeetingTask>(dbContext);
 	public IRepository<TeamMember> TeamMembers { get; } = new Repository<TeamMember>(dbContext);
 	public IStudentProfileRepository StudentProfiles { get; } = new StudentProfileRepository(dbContext);

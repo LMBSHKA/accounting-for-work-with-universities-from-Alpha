@@ -12,6 +12,7 @@ public class Project
 	public ProjectStatus Status { get; set; }
 	public string? Tasks { get; set; }
 	public string? Mvp { get; set; }
+	public DateOnly? Deadline { get; set; }
 	public Guid CreatedByUserId { get; set; }
 	public DateTime CreatedAt { get; set; }
 	public DateTime? UpdatedAt { get; set; }

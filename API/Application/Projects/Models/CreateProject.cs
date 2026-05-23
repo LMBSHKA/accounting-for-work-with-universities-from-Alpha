@@ -11,5 +11,7 @@ public class CreateProject
     public ProjectStatus Status { get; set; }
     public string? Tasks { get; set; }
     public string? Mvp { get; set; }
+    public string? EvaluationCriteria { get; set; }
+    public DateOnly? Deadline { get; set; }
     public Guid CreatedByUserId { get; set; }
 }

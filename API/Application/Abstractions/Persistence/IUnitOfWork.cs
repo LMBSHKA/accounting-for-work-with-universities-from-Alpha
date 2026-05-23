@@ -10,10 +10,10 @@ public interface IUnitOfWork
 	IRepository<ProjectReaction> ProjectReactions { get; }
 	IRepository<ProjectComment> ProjectComments { get; }
 	IRepository<ProjectCommentReaction> ProjectCommentReactions { get; }
-	IRepository<Iteration> Iterations { get; }
+	IIterationRepository Iterations { get; }
 	ITeamRepository Teams { get; }
 	IRepository<TeamResult> TeamResults { get; }
-	IRepository<Meeting> Meetings { get; }
+	IMeetingRepository Meetings { get; }
 	IRepository<MeetingTask> MeetingTasks { get; }
 	IRepository<TeamMember> TeamMembers { get; }
 	IStudentProfileRepository StudentProfiles { get; }

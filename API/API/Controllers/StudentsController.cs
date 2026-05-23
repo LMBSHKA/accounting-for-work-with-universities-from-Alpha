@@ -101,6 +101,7 @@ public class StudentsController(IStudentService studentService) : ControllerBase
 		var result = await _studentService.GetTeamsAsync(new GetTeamsQuery
 		{
 			Search = request.Search,
+			ProjectId = request.ProjectId,
 			Filter = request.Filter,
 			Offset = request.Offset,
 			Limit = request.Limit
@@ -133,6 +134,57 @@ public class StudentsController(IStudentService studentService) : ControllerBase
 			LoadedCount = result.LoadedCount,
 			HasMore = result.HasMore,
 			NextOffset = result.NextOffset
+		});
+	}
+
+	/// <summary>
+	/// Подробные данные команды для страницы команды: участники, стек, проект, описание проекта, количество команд проекта и итерации.
+	/// </summary>
+	[EndpointSummary("Карточка команды")]
+	[HttpGet("team/{teamId:guid}")]
+	public async Task<ActionResult<TeamDetailsResponse>> GetTeamDetails(Guid teamId, CancellationToken cancellationToken)
+	{
+		var team = await _studentService.GetTeamDetailsAsync(teamId, cancellationToken);
+		if (team is null)
+		{
+			return NotFound(new { message = "Team was not found." });
+		}
+
+		return Ok(new TeamDetailsResponse
+		{
+			Id = team.Id,
+			ProjectId = team.ProjectId,
+			Name = team.Name,
+			Skills = team.Skills,
+			CreatedAt = team.CreatedAt,
+			UpdatedAt = team.UpdatedAt,
+			Project = new TeamProjectDetailsResponse
+			{
+				Id = team.Project.Id,
+				Title = team.Project.Title,
+				Description = team.Project.Description,
+				Goal = team.Project.Goal,
+				Mvp = team.Project.Mvp,
+				EvaluationCriteria = team.Project.EvaluationCriteria,
+				Deadline = team.Project.Deadline,
+				Status = team.Project.Status,
+				TeamsCount = team.Project.TeamsCount
+			},
+			Members = team.Members.Select(member => new TeamMemberResponse
+			{
+				Id = member.Id,
+				StudentProfileId = member.StudentProfileId,
+				FullName = member.FullName,
+				Email = member.Email,
+				RoleInTeam = member.RoleInTeam
+			}).ToList(),
+			Iterations = team.Iterations.Select(iteration => new TeamIterationResponse
+			{
+				Id = iteration.Id,
+				Name = iteration.Name,
+				StartOn = iteration.StartOn,
+				EndOn = iteration.EndOn
+			}).ToList()
 		});
 	}
 
