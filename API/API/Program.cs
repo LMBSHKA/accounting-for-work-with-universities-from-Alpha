@@ -3,10 +3,14 @@ using Application.Abstractions.Authentication;
 using Application.Abstractions.Discussions;
 using Application.Abstractions.Persistence;
 using Application.Abstractions.Projects;
+using Application.Abstractions.Meetings;
+using Application.Abstractions.Iterations;
 using Application.Abstractions.Students;
 using Application.Authentication.Services;
 using Application.Discussions.Services;
 using Application.Projects.Services;
+using Application.Meetings.Services;
+using Application.Iterations.Services;
 using Application.Students.Services;
 using Infrastructure.Authentication;
 using Infrastructure.Persistence;
@@ -109,6 +113,8 @@ internal class Program
 		builder.Services.AddScoped<IProjectService, ProjectService>();
 		builder.Services.AddScoped<IDiscussionService, DiscussionService>();
 		builder.Services.AddScoped<IStudentService, StudentService>();
+		builder.Services.AddScoped<IMeetingService, MeetingService>();
+		builder.Services.AddScoped<IIterationService, IterationService>();
 
 		builder.Services.AddOpenApi(options =>
 		{
