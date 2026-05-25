@@ -174,7 +174,9 @@ internal class Program
 				.WithTitle("Alpha API")
 				.WithTheme(ScalarTheme.BluePlanet)
 				.WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient)
-				.AddPreferredSecuritySchemes("Bearer");
+				.AddPreferredSecuritySchemes("Bearer")
+				.WithOpenApiRoutePattern("/alpha-api/openapi/{documentName}.json")
+				.AddServer("https://galacat.xyz/alpha-api", "Production");
 		});
 
 		app.UseAuthentication();
