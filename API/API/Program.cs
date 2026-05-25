@@ -1,21 +1,22 @@
 using API.OpenApi;
 using Application.Abstractions.Authentication;
 using Application.Abstractions.Discussions;
+using Application.Abstractions.Iterations;
+using Application.Abstractions.Meetings;
 using Application.Abstractions.Persistence;
 using Application.Abstractions.Projects;
-using Application.Abstractions.Meetings;
-using Application.Abstractions.Iterations;
 using Application.Abstractions.Students;
 using Application.Authentication.Services;
 using Application.Discussions.Services;
-using Application.Projects.Services;
-using Application.Meetings.Services;
 using Application.Iterations.Services;
+using Application.Meetings.Services;
+using Application.Projects.Services;
 using Application.Students.Services;
 using Infrastructure.Authentication;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.UnitOfWork;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
@@ -42,6 +43,16 @@ internal class Program
 					.AllowAnyHeader()
 					.AllowCredentials();
 			});
+		});
+
+		builder.Services.Configure<ForwardedHeadersOptions>(options =>
+		{
+			options.ForwardedHeaders =
+				ForwardedHeaders.XForwardedFor |
+				ForwardedHeaders.XForwardedProto;
+
+			options.KnownNetworks.Clear();
+			options.KnownProxies.Clear();
 		});
 
 		builder.Services.AddControllers();
@@ -135,6 +146,8 @@ internal class Program
 		});
 
 		var app = builder.Build();
+
+		app.UseForwardedHeaders();
 
 		app.MapOpenApi();
 

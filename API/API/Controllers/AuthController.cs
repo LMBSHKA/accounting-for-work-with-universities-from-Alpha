@@ -64,15 +64,15 @@ public class AuthController(
     [HttpPost("logout")]
     public IActionResult Logout()
     {
-        Response.Cookies.Delete(_jwtOptions.CookieName, new CookieOptions
-        {
-            HttpOnly = true,
-            Secure = Request.IsHttps,
-            SameSite = SameSiteMode.Lax,
-            IsEssential = true
-        });
+		Response.Cookies.Delete(_jwtOptions.CookieName, new CookieOptions
+		{
+			HttpOnly = true,
+			Secure = true,
+			SameSite = SameSiteMode.None,
+			IsEssential = true
+		});
 
-        return Ok(new { message = "Logged out." });
+		return Ok(new { message = "Logged out." });
     }
 
 	[EndpointSummary("Запрос для теста")]
@@ -122,8 +122,8 @@ public class AuthController(
 		Response.Cookies.Append(_jwtOptions.CookieName, authResult.Token.AccessToken, new CookieOptions
 		{
 			HttpOnly = true,
-			Secure = Request.IsHttps,
-			SameSite = SameSiteMode.Lax,
+			Secure = true,
+			SameSite = SameSiteMode.None,
 			Expires = authResult.Token.ExpiresAtUtc,
 			IsEssential = true
 		});
