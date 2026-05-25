@@ -43,7 +43,7 @@ public class AuthController(
         Response.Cookies.Append(_jwtOptions.CookieName, authResult.Token.AccessToken, new CookieOptions
         {
             HttpOnly = true,
-            Secure = true,
+            Secure = false,
             SameSite = SameSiteMode.None,
             Expires = authResult.Token.ExpiresAtUtc,
             IsEssential = true
