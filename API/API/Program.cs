@@ -30,16 +30,30 @@ internal class Program
 	{
 		var builder = WebApplication.CreateBuilder(args);
 
+		//builder.Services.AddCors(options =>
+		//{
+		//	options.AddPolicy(CorsPolicyName, policy =>
+		//	{
+		//		policy
+		//			.WithOrigins(
+		//				"http://localhost:5173",
+		//				"http://127.0.0.1:5173",
+		//				"https://front-web-accounting-alpha3-ptf0o2br9.vercel.app"
+		//			)
+		//			.AllowAnyMethod()
+		//			.AllowAnyHeader()
+		//			.AllowCredentials();
+		//	});
+		//});
+
+		const string CorsPolicyName = "Frontend";
+
 		builder.Services.AddCors(options =>
 		{
 			options.AddPolicy(CorsPolicyName, policy =>
 			{
 				policy
-					.WithOrigins(
-						"http://localhost:5173",
-						"http://127.0.0.1:5173",
-						"https://front-web-accounting-alpha3-ptf0o2br9.vercel.app"
-					)
+					.SetIsOriginAllowed(_ => true)
 					.AllowAnyMethod()
 					.AllowAnyHeader()
 					.AllowCredentials();
@@ -150,6 +164,8 @@ internal class Program
 
 		app.UseForwardedHeaders();
 
+		app.UseCors(CorsPolicyName);
+
 		app.MapOpenApi();
 
 		app.MapScalarApiReference(options =>
@@ -160,8 +176,6 @@ internal class Program
 				.WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient)
 				.AddPreferredSecuritySchemes("Bearer");
 		});
-
-		app.UseCors(CorsPolicyName);
 
 		app.UseAuthentication();
 		app.UseAuthorization();
