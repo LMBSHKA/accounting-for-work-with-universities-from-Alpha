@@ -44,7 +44,7 @@ public class AuthController(
         {
             HttpOnly = true,
             Secure = Request.IsHttps,
-            SameSite = SameSiteMode.Lax,
+            SameSite = SameSiteMode.None,
             Expires = authResult.Token.ExpiresAtUtc,
             IsEssential = true
         });
