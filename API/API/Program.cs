@@ -175,7 +175,7 @@ internal class Program
 				.WithTheme(ScalarTheme.BluePlanet)
 				.WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient)
 				.AddPreferredSecuritySchemes("Bearer")
-				.WithOpenApiRoutePattern("/alpha-api/openapi/{documentName}.json")
+				.WithOpenApiRoutePattern("https://galacat.xyz/alpha-api/openapi/{documentName}.json")
 				.AddServer("https://galacat.xyz/alpha-api", "Production");
 		});
 
