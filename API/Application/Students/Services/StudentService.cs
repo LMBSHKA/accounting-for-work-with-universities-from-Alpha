@@ -131,6 +131,80 @@ public class StudentService(IUnitOfWork unitOfWork) : IStudentService
 		return _unitOfWork.Teams.GetTeamDetailsAsync(teamId, cancellationToken);
 	}
 
+	public async Task<int> DeleteStudentsAsync(IEnumerable<Guid> studentIds, CancellationToken cancellationToken = default)
+	{
+		var ids = studentIds
+			.Where(id => id != Guid.Empty)
+			.Distinct()
+			.ToList();
+
+		if (ids.Count == 0)
+		{
+			return 0;
+		}
+
+		var teamMembers = _unitOfWork.TeamMembers
+			.Query()
+			.Where(member => ids.Contains(member.StudentsProfileId))
+			.ToList();
+
+		foreach (var teamMember in teamMembers)
+		{
+			_unitOfWork.TeamMembers.Remove(teamMember);
+		}
+
+		var finalMemberScores = _unitOfWork.FinalMemberScores
+			.Query()
+			.Where(score => ids.Contains(score.StudentProfileId))
+			.ToList();
+
+		foreach (var finalMemberScore in finalMemberScores)
+		{
+			_unitOfWork.FinalMemberScores.Remove(finalMemberScore);
+		}
+
+		var students = _unitOfWork.StudentProfiles
+			.Query()
+			.Where(student => ids.Contains(student.Id))
+			.ToList();
+
+		foreach (var student in students)
+		{
+			_unitOfWork.StudentProfiles.Remove(student);
+		}
+
+		await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+		return students.Count;
+	}
+
+	public async Task<int> DeleteTeamsAsync(IEnumerable<Guid> teamIds, CancellationToken cancellationToken = default)
+	{
+		var ids = teamIds
+			.Where(id => id != Guid.Empty)
+			.Distinct()
+			.ToList();
+
+		if (ids.Count == 0)
+		{
+			return 0;
+		}
+
+		var teams = _unitOfWork.Teams
+			.Query()
+			.Where(team => ids.Contains(team.Id))
+			.ToList();
+
+		foreach (var team in teams)
+		{
+			_unitOfWork.Teams.Remove(team);
+		}
+
+		await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+		return teams.Count;
+	}
+
 	private static StudentResult Map(StudentProfile student)
 	{
 		return new StudentResult

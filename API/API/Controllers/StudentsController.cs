@@ -238,4 +238,36 @@ public class StudentsController(IStudentService studentService) : ControllerBase
 			}).ToList()
 		});
 	}
+
+	[EndpointSummary("Удаление студентов")]
+	[HttpDelete]
+	public async Task<IActionResult> DeleteStudents(
+	[FromBody] List<Guid> ids,
+	CancellationToken cancellationToken)
+	{
+		if (ids is null || ids.Count == 0)
+		{
+			return BadRequest(new { message = "Student ids list is required." });
+		}
+
+		var deletedCount = await _studentService.DeleteStudentsAsync(ids, cancellationToken);
+
+		return Ok(new { deletedCount });
+	}
+
+	[EndpointSummary("Удаление команд")]
+	[HttpDelete("team")]
+	public async Task<IActionResult> DeleteTeams(
+		[FromBody] List<Guid> ids,
+		CancellationToken cancellationToken)
+	{
+		if (ids is null || ids.Count == 0)
+		{
+			return BadRequest(new { message = "Team ids list is required." });
+		}
+
+		var deletedCount = await _studentService.DeleteTeamsAsync(ids, cancellationToken);
+
+		return Ok(new { deletedCount });
+	}
 }
