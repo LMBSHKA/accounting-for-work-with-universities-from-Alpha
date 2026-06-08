@@ -6,6 +6,7 @@ public class DiscussionIdeaListItemResult
 {
 	public Guid Id { get; set; }
 	public string Title { get; set; } = string.Empty;
+	public string? Description { get; set; }
 	public ProjectStatus Status { get; set; }
 	public string? AuthorFullName { get; set; }
 	public int LikeReactionsCount { get; set; }

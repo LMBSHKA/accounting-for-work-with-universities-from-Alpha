@@ -11,4 +11,5 @@ public interface IDiscussionService
 	Task<bool> DeleteProjectReactionAsync(Guid projectId, Guid userId, CancellationToken cancellationToken = default);
 	Task<bool> SetProjectCommentReactionAsync(SetProjectCommentReactionCommand command, CancellationToken cancellationToken = default);
 	Task<bool> DeleteProjectCommentReactionAsync(Guid projectCommentId, Guid userId, CancellationToken cancellationToken = default);
+	Task<DiscussionIdeaListItemResult?> CreateIdeaAsync(CreateDiscussionIdeaCommand command, CancellationToken cancellationToken = default);
 }

@@ -1,6 +1,7 @@
 using Application.Abstractions.Discussions;
 using Application.Abstractions.Persistence;
 using Application.Discussions.Models;
+using Entities.enums;
 using Entities.Models;
 
 namespace Application.Discussions.Services;
@@ -77,6 +78,61 @@ public class DiscussionService(IUnitOfWork unitOfWork) : IDiscussionService
 		};
 	}
 
+	public async Task<DiscussionIdeaListItemResult?> CreateIdeaAsync(
+	CreateDiscussionIdeaCommand command,
+	CancellationToken cancellationToken = default)
+	{
+		var title = NormalizeRequired(command.Title);
+		if (string.IsNullOrWhiteSpace(title) || command.CreatedByUserId == Guid.Empty)
+		{
+			return null;
+		}
+
+		var user = await _unitOfWork.Users.GetByIdAsync(command.CreatedByUserId, cancellationToken);
+		if (user is null)
+		{
+			return null;
+		}
+
+		var now = DateTime.UtcNow;
+
+		var project = new Project
+		{
+			Id = Guid.NewGuid(),
+			Title = title,
+			Description = NormalizeOptional(command.Description),
+			Status = command.Status,
+			CreatedByUserId = command.CreatedByUserId,
+			CreatedAt = now,
+			ApprovedAt = command.Status == ProjectStatus.Active ? now : null,
+			ArchivedAt = command.Status == ProjectStatus.Archived ? now : null
+		};
+
+		await _unitOfWork.Projects.AddAsync(project, cancellationToken);
+
+		await _unitOfWork.ProjectStatusHistory.AddAsync(new ProjectStatusHistory
+		{
+			Id = Guid.NewGuid(),
+			ProjectId = project.Id,
+			Status = project.Status,
+			ChangedByUserId = command.CreatedByUserId,
+			ChangeComment = "Идея создана",
+			ChangedAt = now
+		}, cancellationToken);
+
+		await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+		return new DiscussionIdeaListItemResult
+		{
+			Id = project.Id,
+			Title = project.Title,
+			Description = project.Description,
+			Status = project.Status,
+			AuthorFullName = user.FullName,
+			LikeReactionsCount = 0,
+			DislikeReactionsCount = 0
+		};
+	}
 
 	public async Task<bool> SetProjectReactionAsync(SetProjectReactionCommand command, CancellationToken cancellationToken = default)
 	{
@@ -201,5 +257,15 @@ public class DiscussionService(IUnitOfWork unitOfWork) : IDiscussionService
 		}
 
 		return roots;
+	}
+
+	private static string NormalizeRequired(string value)
+	{
+		return value.Trim();
+	}
+
+	private static string? NormalizeOptional(string? value)
+	{
+		return string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 	}
 }

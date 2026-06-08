@@ -221,6 +221,44 @@ public class DiscussionsController(IDiscussionService discussionService) : Contr
 		return NoContent();
 	}
 
+	[EndpointSummary("Добавление идеи для страницы обсуждения")]
+	[HttpPost]
+	public async Task<ActionResult<DiscussionIdeaListItemResponse>> CreateIdea(
+	[FromBody] CreateDiscussionIdeaRequest request,
+	CancellationToken cancellationToken)
+	{
+		if (!ModelState.IsValid)
+		{
+			return ValidationProblem(ModelState);
+		}
+
+		if (!TryGetCurrentUserId(out var userId))
+		{
+			return Unauthorized(new { message = "User identifier claim is missing." });
+		}
+
+		var status = request.Status ?? ProjectStatus.Active;
+		if (!Enum.IsDefined(typeof(ProjectStatus), status))
+		{
+			return BadRequest(new { message = "Status must be 1 (Active), 2 (Rejected), 3 (Archived) or 4 (Completed)." });
+		}
+
+		var idea = await _discussionService.CreateIdeaAsync(new CreateDiscussionIdeaCommand
+		{
+			Title = request.Title,
+			Description = request.Description,
+			Status = status,
+			CreatedByUserId = userId
+		}, cancellationToken);
+
+		if (idea is null)
+		{
+			return BadRequest(new { message = "Idea title is empty or author was not found." });
+		}
+
+		return Ok(MapIdea(idea));
+	}
+
 	private bool TryGetCurrentUserId(out Guid userId)
 	{
 		var userIdValue = User.FindFirstValue("userId") ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -242,6 +280,20 @@ public class DiscussionsController(IDiscussionService discussionService) : Contr
 			LikeReactionsCount = comment.LikeReactionsCount,
 			DislikeReactionsCount = comment.DislikeReactionsCount,
 			Replies = comment.Replies.Select(MapComment).ToList()
+		};
+	}
+
+	private static DiscussionIdeaListItemResponse MapIdea(DiscussionIdeaListItemResult idea)
+	{
+		return new DiscussionIdeaListItemResponse
+		{
+			Id = idea.Id,
+			Title = idea.Title,
+			Description = idea.Description,
+			Status = idea.Status,
+			AuthorFullName = idea.AuthorFullName,
+			LikeReactionsCount = idea.LikeReactionsCount,
+			DislikeReactionsCount = idea.DislikeReactionsCount
 		};
 	}
 }
