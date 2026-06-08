@@ -46,6 +46,9 @@ public class StudentService(IUnitOfWork unitOfWork) : IStudentService
 	{
 		var name = NormalizeRequired(command.Name);
 		var skills = NormalizeOptional(command.Skills);
+		var curatorId = command.CuratorId.HasValue && command.CuratorId.Value != Guid.Empty
+			? command.CuratorId.Value
+			: (Guid?)null;
 		var studentProfileIds = command.StudentProfileIds
 			.Where(id => id != Guid.Empty)
 			.Distinct()
@@ -60,6 +63,16 @@ public class StudentService(IUnitOfWork unitOfWork) : IStudentService
 		if (project is null)
 		{
 			return null;
+		}
+
+		User? curator = null;
+		if (curatorId.HasValue)
+		{
+			curator = await _unitOfWork.Users.GetByIdAsync(curatorId.Value, cancellationToken);
+			if (curator is null)
+			{
+				return null;
+			}
 		}
 
 		var teamWithSameNameExists = _unitOfWork.Teams
@@ -90,6 +103,8 @@ public class StudentService(IUnitOfWork unitOfWork) : IStudentService
 			ProjectId = command.ProjectId,
 			Name = name,
 			Skills = skills,
+			CuratorId = curatorId,
+			Curator = curator,
 			CreatedByUserId = command.CreatedByUserId,
 			CreatedAt = now
 		};
@@ -124,6 +139,11 @@ public class StudentService(IUnitOfWork unitOfWork) : IStudentService
 	public Task<GetTeamsResult> GetTeamsAsync(GetTeamsQuery query, CancellationToken cancellationToken = default)
 	{
 		return _unitOfWork.Teams.GetTeamsAsync(query, cancellationToken);
+	}
+
+	public Task<GetCuratorsResult> GetCuratorsAsync(GetCuratorsQuery query, CancellationToken cancellationToken = default)
+	{
+		return _unitOfWork.Teams.GetCuratorsAsync(query, cancellationToken);
 	}
 
 	public Task<TeamDetailsResult?> GetTeamDetailsAsync(Guid teamId, CancellationToken cancellationToken = default)
@@ -225,6 +245,8 @@ public class StudentService(IUnitOfWork unitOfWork) : IStudentService
 			ProjectId = team.ProjectId,
 			Name = team.Name,
 			Skills = team.Skills,
+			CuratorId = team.CuratorId,
+			CuratorFullName = team.Curator?.FullName,
 			CreatedByUserId = team.CreatedByUserId,
 			CreatedAt = team.CreatedAt,
 			UpdatedAt = team.UpdatedAt,

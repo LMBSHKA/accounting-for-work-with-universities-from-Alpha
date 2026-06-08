@@ -16,6 +16,7 @@ public class User
 	public ICollection<ProjectComment> ProjectComments { get; set; } = new List<ProjectComment>();
 	public ICollection<ProjectCommentReaction> ProjectCommentReactions { get; set; } = new List<ProjectCommentReaction>();
 	public ICollection<Team> CreatedTeams { get; set; } = new List<Team>();
+	public ICollection<Team> CuratedTeams { get; set; } = new List<Team>();
 	public ICollection<Meeting> CreatedMeetings { get; set; } = new List<Meeting>();
 	public ICollection<TeamResult> UploadedTeamResults { get; set; } = new List<TeamResult>();
 	public ICollection<IterationTeamScore> ScoredIterationTeams { get; set; } = new List<IterationTeamScore>();

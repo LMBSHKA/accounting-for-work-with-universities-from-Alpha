@@ -29,6 +29,8 @@ public class TeamRepository(AppDbContext dbContext) : Repository<Team>(dbContext
 				ProjectStatus = team.Project == null ? null : team.Project.Status,
 				Name = team.Name,
 				Skills = team.Skills,
+				CuratorId = team.CuratorId,
+				CuratorFullName = team.Curator == null ? null : team.Curator.FullName,
 				CreatedAt = team.CreatedAt,
 				UpdatedAt = team.UpdatedAt,
 				Members = team.Members
@@ -59,6 +61,63 @@ public class TeamRepository(AppDbContext dbContext) : Repository<Team>(dbContext
 		};
 	}
 
+	public async Task<GetCuratorsResult> GetCuratorsAsync(GetCuratorsQuery request, CancellationToken cancellationToken = default)
+	{
+		var offset = Math.Max(0, request.Offset);
+		var limit = Math.Clamp(request.Limit, 1, 100);
+
+		var query = DbContext.Users
+			.AsNoTracking()
+			.Where(user => user.CuratedTeams.Any());
+
+		if (!string.IsNullOrWhiteSpace(request.Search))
+		{
+			var normalizedSearch = request.Search.Trim().ToLower();
+			query = query.Where(user =>
+				user.FullName.ToLower().Contains(normalizedSearch) ||
+				user.Email.ToLower().Contains(normalizedSearch));
+		}
+
+		var totalCount = await query.CountAsync(cancellationToken);
+
+		var curators = await query
+			.OrderBy(user => user.FullName)
+			.ThenBy(user => user.Email)
+			.Skip(offset)
+			.Take(limit)
+			.Select(user => new CuratorListItemResult
+			{
+				Id = user.Id,
+				FullName = user.FullName,
+				Email = user.Email,
+				SystemRole = user.SystemRole,
+				Teams = user.CuratedTeams
+					.OrderBy(team => team.Name)
+					.Select(team => new CuratorTeamResult
+					{
+						Id = team.Id,
+						ProjectId = team.ProjectId,
+						Name = team.Name,
+						ProjectTitle = team.Project == null ? null : team.Project.Title
+					})
+					.ToList()
+			})
+			.ToListAsync(cancellationToken);
+
+		var loadedCount = offset + curators.Count;
+
+		return new GetCuratorsResult
+		{
+			Items = curators,
+			TotalCount = totalCount,
+			Offset = offset,
+			Limit = limit,
+			LoadedCount = loadedCount,
+			HasMore = loadedCount < totalCount,
+			NextOffset = loadedCount < totalCount ? loadedCount : null
+		};
+	}
+
 	public async Task<TeamDetailsResult?> GetTeamDetailsAsync(Guid teamId, CancellationToken cancellationToken = default)
 	{
 		return await DbContext.Teams
@@ -70,6 +129,8 @@ public class TeamRepository(AppDbContext dbContext) : Repository<Team>(dbContext
 				ProjectId = team.ProjectId,
 				Name = team.Name,
 				Skills = team.Skills,
+				CuratorId = team.CuratorId,
+				CuratorFullName = team.Curator == null ? null : team.Curator.FullName,
 				CreatedAt = team.CreatedAt,
 				UpdatedAt = team.UpdatedAt,
 				Project = team.Project == null
@@ -131,6 +192,7 @@ public class TeamRepository(AppDbContext dbContext) : Repository<Team>(dbContext
 				team.Name.ToLower().Contains(normalizedSearch) ||
 				(team.Skills != null && team.Skills.ToLower().Contains(normalizedSearch)) ||
 				(team.Project != null && team.Project.Title.ToLower().Contains(normalizedSearch)) ||
+				(team.Curator != null && team.Curator.FullName.ToLower().Contains(normalizedSearch)) ||
 				team.Members.Any(member =>
 					member.StudentsProfile != null &&
 					member.StudentsProfile.FullName.ToLower().Contains(normalizedSearch)));

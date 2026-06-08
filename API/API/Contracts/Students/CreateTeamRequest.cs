@@ -14,6 +14,8 @@ public class CreateTeamRequest
     [MaxLength(1000)]
     public string? Skills { get; set; }
 
+    public Guid? CuratorId { get; set; }
+
     [Required]
     [MinLength(1)]
     public List<Guid> StudentProfileIds { get; set; } = [];

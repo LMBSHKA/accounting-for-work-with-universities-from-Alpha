@@ -117,6 +117,8 @@ public class StudentsController(IStudentService studentService) : ControllerBase
 				ProjectStatus = team.ProjectStatus,
 				Name = team.Name,
 				Skills = team.Skills,
+				CuratorId = team.CuratorId,
+				CuratorFullName = team.CuratorFullName,
 				CreatedAt = team.CreatedAt,
 				UpdatedAt = team.UpdatedAt,
 				Members = team.Members.Select(member => new TeamMemberResponse
@@ -126,6 +128,49 @@ public class StudentsController(IStudentService studentService) : ControllerBase
 					FullName = member.FullName,
 					Email = member.Email,
 					RoleInTeam = member.RoleInTeam
+				}).ToList()
+			}).ToList(),
+			TotalCount = result.TotalCount,
+			Offset = result.Offset,
+			Limit = result.Limit,
+			LoadedCount = result.LoadedCount,
+			HasMore = result.HasMore,
+			NextOffset = result.NextOffset
+		});
+	}
+
+	[EndpointSummary("Список кураторов")]
+	[HttpPost("curator/list")]
+	public async Task<ActionResult<GetCuratorsResponse>> GetCurators(
+		[FromBody] GetCuratorsRequest request,
+		CancellationToken cancellationToken)
+	{
+		if (!ModelState.IsValid)
+		{
+			return ValidationProblem(ModelState);
+		}
+
+		var result = await _studentService.GetCuratorsAsync(new GetCuratorsQuery
+		{
+			Search = request.Search,
+			Offset = request.Offset,
+			Limit = request.Limit
+		}, cancellationToken);
+
+		return Ok(new GetCuratorsResponse
+		{
+			Items = result.Items.Select(curator => new CuratorListItemResponse
+			{
+				Id = curator.Id,
+				FullName = curator.FullName,
+				Email = curator.Email,
+				SystemRole = curator.SystemRole,
+				Teams = curator.Teams.Select(team => new CuratorTeamResponse
+				{
+					Id = team.Id,
+					ProjectId = team.ProjectId,
+					Name = team.Name,
+					ProjectTitle = team.ProjectTitle
 				}).ToList()
 			}).ToList(),
 			TotalCount = result.TotalCount,
@@ -156,6 +201,8 @@ public class StudentsController(IStudentService studentService) : ControllerBase
 			ProjectId = team.ProjectId,
 			Name = team.Name,
 			Skills = team.Skills,
+			CuratorId = team.CuratorId,
+			CuratorFullName = team.CuratorFullName,
 			CreatedAt = team.CreatedAt,
 			UpdatedAt = team.UpdatedAt,
 			Project = new TeamProjectDetailsResponse
@@ -210,13 +257,14 @@ public class StudentsController(IStudentService studentService) : ControllerBase
 			ProjectId = request.ProjectId,
 			Name = request.Name,
 			Skills = request.Skills,
+			CuratorId = request.CuratorId,
 			CreatedByUserId = userId,
 			StudentProfileIds = request.StudentProfileIds
 		}, cancellationToken);
 
 		if (team is null)
 		{
-			return Conflict(new { message = "Team with this name already exists in project, project or students were not found, or request data is invalid." });
+			return Conflict(new { message = "Team with this name already exists in project, project, curator or students were not found, or request data is invalid." });
 		}
 
 		return Ok(new TeamResponse
@@ -225,6 +273,8 @@ public class StudentsController(IStudentService studentService) : ControllerBase
 			ProjectId = team.ProjectId,
 			Name = team.Name,
 			Skills = team.Skills,
+			CuratorId = team.CuratorId,
+			CuratorFullName = team.CuratorFullName,
 			CreatedByUserId = team.CreatedByUserId,
 			CreatedAt = team.CreatedAt,
 			UpdatedAt = team.UpdatedAt,

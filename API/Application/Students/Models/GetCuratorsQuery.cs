@@ -1,0 +1,8 @@
+namespace Application.Students.Models;
+
+public class GetCuratorsQuery
+{
+	public string? Search { get; set; }
+	public int Offset { get; set; } = 0;
+	public int Limit { get; set; } = 8;
+}
