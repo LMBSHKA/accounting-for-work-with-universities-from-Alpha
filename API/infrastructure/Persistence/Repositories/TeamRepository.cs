@@ -68,8 +68,7 @@ public class TeamRepository(AppDbContext dbContext) : Repository<Team>(dbContext
 		var limit = Math.Clamp(request.Limit, 1, 100);
 
 		var query = DbContext.Users
-			.AsNoTracking()
-			.Where(user => user.CuratedTeams.Any());
+			.AsNoTracking();
 
 		if (!string.IsNullOrWhiteSpace(request.Search))
 		{
