@@ -14,5 +14,6 @@ public class CuratorTeamResult
 	public Guid Id { get; set; }
 	public Guid ProjectId { get; set; }
 	public string Name { get; set; } = string.Empty;
+	public string? FileUrl { get; set; }
 	public string? ProjectTitle { get; set; }
 }

@@ -46,6 +46,7 @@ public class StudentService(IUnitOfWork unitOfWork) : IStudentService
 	{
 		var name = NormalizeRequired(command.Name);
 		var skills = NormalizeOptional(command.Skills);
+		var fileUrl = NormalizeOptional(command.FileUrl);
 		var curatorId = command.CuratorId.HasValue && command.CuratorId.Value != Guid.Empty
 			? command.CuratorId.Value
 			: (Guid?)null;
@@ -103,6 +104,7 @@ public class StudentService(IUnitOfWork unitOfWork) : IStudentService
 			ProjectId = command.ProjectId,
 			Name = name,
 			Skills = skills,
+			FileUrl = fileUrl,
 			CuratorId = curatorId,
 			Curator = curator,
 			CreatedByUserId = command.CreatedByUserId,
@@ -245,6 +247,7 @@ public class StudentService(IUnitOfWork unitOfWork) : IStudentService
 			ProjectId = team.ProjectId,
 			Name = team.Name,
 			Skills = team.Skills,
+			FileUrl = team.FileUrl,
 			CuratorId = team.CuratorId,
 			CuratorFullName = team.Curator?.FullName,
 			CreatedByUserId = team.CreatedByUserId,

@@ -14,6 +14,9 @@ public class CreateTeamRequest
     [MaxLength(1000)]
     public string? Skills { get; set; }
 
+    [MaxLength(1024)]
+    public string? FileUrl { get; set; }
+
     public Guid? CuratorId { get; set; }
 
     [Required]

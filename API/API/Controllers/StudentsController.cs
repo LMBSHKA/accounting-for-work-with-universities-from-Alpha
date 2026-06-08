@@ -117,6 +117,7 @@ public class StudentsController(IStudentService studentService) : ControllerBase
 				ProjectStatus = team.ProjectStatus,
 				Name = team.Name,
 				Skills = team.Skills,
+				FileUrl = team.FileUrl,
 				CuratorId = team.CuratorId,
 				CuratorFullName = team.CuratorFullName,
 				CreatedAt = team.CreatedAt,
@@ -170,6 +171,7 @@ public class StudentsController(IStudentService studentService) : ControllerBase
 					Id = team.Id,
 					ProjectId = team.ProjectId,
 					Name = team.Name,
+					FileUrl = team.FileUrl,
 					ProjectTitle = team.ProjectTitle
 				}).ToList()
 			}).ToList(),
@@ -201,6 +203,7 @@ public class StudentsController(IStudentService studentService) : ControllerBase
 			ProjectId = team.ProjectId,
 			Name = team.Name,
 			Skills = team.Skills,
+			FileUrl = team.FileUrl,
 			CuratorId = team.CuratorId,
 			CuratorFullName = team.CuratorFullName,
 			CreatedAt = team.CreatedAt,
@@ -257,6 +260,7 @@ public class StudentsController(IStudentService studentService) : ControllerBase
 			ProjectId = request.ProjectId,
 			Name = request.Name,
 			Skills = request.Skills,
+			FileUrl = request.FileUrl,
 			CuratorId = request.CuratorId,
 			CreatedByUserId = userId,
 			StudentProfileIds = request.StudentProfileIds
@@ -273,6 +277,7 @@ public class StudentsController(IStudentService studentService) : ControllerBase
 			ProjectId = team.ProjectId,
 			Name = team.Name,
 			Skills = team.Skills,
+			FileUrl = team.FileUrl,
 			CuratorId = team.CuratorId,
 			CuratorFullName = team.CuratorFullName,
 			CreatedByUserId = team.CreatedByUserId,

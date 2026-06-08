@@ -208,6 +208,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
 			entity.Property(e => e.Name).HasMaxLength(200).IsRequired();
 			entity.Property(e => e.Skills).HasMaxLength(1000);
+			entity.Property(e => e.FileUrl).HasMaxLength(1024);
 
 			entity.HasOne(e => e.Project)
 				.WithMany(p => p.Teams)

@@ -29,6 +29,7 @@ public class TeamRepository(AppDbContext dbContext) : Repository<Team>(dbContext
 				ProjectStatus = team.Project == null ? null : team.Project.Status,
 				Name = team.Name,
 				Skills = team.Skills,
+				FileUrl = team.FileUrl,
 				CuratorId = team.CuratorId,
 				CuratorFullName = team.Curator == null ? null : team.Curator.FullName,
 				CreatedAt = team.CreatedAt,
@@ -98,6 +99,7 @@ public class TeamRepository(AppDbContext dbContext) : Repository<Team>(dbContext
 						Id = team.Id,
 						ProjectId = team.ProjectId,
 						Name = team.Name,
+						FileUrl = team.FileUrl,
 						ProjectTitle = team.Project == null ? null : team.Project.Title
 					})
 					.ToList()
@@ -129,6 +131,7 @@ public class TeamRepository(AppDbContext dbContext) : Repository<Team>(dbContext
 				ProjectId = team.ProjectId,
 				Name = team.Name,
 				Skills = team.Skills,
+				FileUrl = team.FileUrl,
 				CuratorId = team.CuratorId,
 				CuratorFullName = team.Curator == null ? null : team.Curator.FullName,
 				CreatedAt = team.CreatedAt,

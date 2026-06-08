@@ -8,6 +8,7 @@ public class Team
     public Guid CreatedByUserId { get; set; }
     public DateTime CreatedAt { get; set; }
     public string? Skills { get; set; }
+    public string? FileUrl { get; set; }
     public Guid? CuratorId { get; set; }
     public DateTime? UpdatedAt { get; set; }
 
