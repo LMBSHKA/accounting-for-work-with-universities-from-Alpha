@@ -1,4 +1,4 @@
-using Application.Abstractions.Persistence;
+﻿using Application.Abstractions.Persistence;
 using Application.Discussions.Models;
 using Application.Projects.Models;
 using Entities.enums;
@@ -14,7 +14,8 @@ public class ProjectRepository(AppDbContext dbContext) : Repository<Project>(dbC
 		var offset = Math.Max(0, request.Offset);
 		var limit = Math.Clamp(request.Limit, 1, 100);
 
-		var query = ApplyProjectListFilters(DbSet.AsNoTracking(), request.Search, request.Statuses);
+		var query = ApplyProjectListFilters(DbSet.AsNoTracking(), request.Search, request.Statuses)
+			.Where(project => project.Status != ProjectStatus.Idea);
 		var totalCount = await query.CountAsync(cancellationToken);
 
 		var projects = await query
@@ -74,7 +75,8 @@ public class ProjectRepository(AppDbContext dbContext) : Repository<Project>(dbC
 		var offset = Math.Max(0, request.Offset);
 		var limit = Math.Clamp(request.Limit, 1, 100);
 
-		var query = ApplyProjectListFilters(DbSet.AsNoTracking(), request.Search, request.Statuses);
+		var query = ApplyProjectListFilters(DbSet.AsNoTracking(), request.Search, request.Statuses)
+			.Where(project => project.Status == ProjectStatus.Idea);
 		var totalCount = await query.CountAsync(cancellationToken);
 
 		var ideas = await query
@@ -86,6 +88,7 @@ public class ProjectRepository(AppDbContext dbContext) : Repository<Project>(dbC
 			{
 				Id = project.Id,
 				Title = project.Title,
+				Description = project.Description,
 				Status = project.Status,
 				AuthorFullName = project.CreatedByUser == null ? null : project.CreatedByUser.FullName,
 				LikeReactionsCount = project.Reactions.Count(reaction => reaction.ReactionType == ReactionType.Like),

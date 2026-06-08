@@ -1,4 +1,4 @@
-using API.Contracts.Projects;
+﻿using API.Contracts.Projects;
 using Application.Abstractions.Projects;
 using Application.Projects.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -28,6 +28,11 @@ public class ProjectsController(IProjectService projectService) : ControllerBase
         {
             return Unauthorized(new { message = "User identifier claim is missing." });
         }
+
+		if (request.Status == Entities.enums.ProjectStatus.Idea)
+		{
+			return BadRequest(new { message = "Status 5 (Idea) is used only for ideas. Use api/discussion to create an idea." });
+		}
 
         var project = await _projectService.CreateAsync(new CreateProject
         {

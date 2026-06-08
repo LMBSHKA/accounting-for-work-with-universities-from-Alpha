@@ -27,6 +27,7 @@ public class CreateProjectRequest
         2 — Rejected: отклоненный проект.
         3 — Archived: архивный проект.
         4 — Completed: завершенный проект.
+        5 — Idea: используется только для идей, через создание проекта передавать не нужно.
      """)]
 	[Required]
     public ProjectStatus Status { get; set; }

@@ -1,4 +1,4 @@
-using Entities.enums;
+﻿using Entities.enums;
 using System.ComponentModel;
 
 namespace API.Contracts.Discussions;
@@ -26,15 +26,8 @@ public class GetDiscussionIdeasRequest
 
     [Description("""
     Фильтр по статусам идеи.
-
-    Значения:
-    1 — Active: активная идея.
-    2 — Rejected: отклоненная идея.
-    3 — Archived: архивная идея.
-    4 — Completed: завершенная идея.
-
-    Можно передать несколько значений, например: [1, 3].
-    Если null или пустой массив — вернутся идеи со всеми статусами.
+    Идеи всегда выводятся только со статусом 5 — Idea.
+    Если передать статусы без Idea, список будет пустым.
     """)]
     public List<ProjectStatus>? Statuses { get; set; }
 }

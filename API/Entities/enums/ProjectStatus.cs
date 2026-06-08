@@ -12,5 +12,6 @@ namespace Entities.enums
 		Rejected = 2,
 		Archived = 3,
 		Completed = 4,
+		Idea = 5
 	}
 }

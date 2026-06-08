@@ -1,5 +1,7 @@
-using Entities.enums;
+﻿using Entities.enums;
 using System.ComponentModel;
+
+namespace API.Contracts.Projects;
 
 public class GetProjectsRequest
 {
@@ -31,8 +33,9 @@ public class GetProjectsRequest
     3 — Archived: архивный проект.
     4 — Completed: завершенный проект.
 
+    Статус 5 — Idea в списке проектов не выводится.
     Можно передать несколько значений, например: [1, 3].
-    Если null или пустой массив — вернутся проекты со всеми статусами.
+    Если null или пустой массив — вернутся проекты со всеми проектными статусами, кроме Idea.
     """)]
 	public List<ProjectStatus>? Statuses { get; set; }
 }

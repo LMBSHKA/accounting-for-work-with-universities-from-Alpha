@@ -1,4 +1,4 @@
-using API.Contracts.Discussions;
+﻿using API.Contracts.Discussions;
 using Application.Abstractions.Discussions;
 using Application.Discussions.Models;
 using Entities.enums;
@@ -237,17 +237,11 @@ public class DiscussionsController(IDiscussionService discussionService) : Contr
 			return Unauthorized(new { message = "User identifier claim is missing." });
 		}
 
-		var status = request.Status ?? ProjectStatus.Active;
-		if (!Enum.IsDefined(typeof(ProjectStatus), status))
-		{
-			return BadRequest(new { message = "Status must be 1 (Active), 2 (Rejected), 3 (Archived) or 4 (Completed)." });
-		}
-
 		var idea = await _discussionService.CreateIdeaAsync(new CreateDiscussionIdeaCommand
 		{
 			Title = request.Title,
 			Description = request.Description,
-			Status = status,
+			Status = ProjectStatus.Idea,
 			CreatedByUserId = userId
 		}, cancellationToken);
 

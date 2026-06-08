@@ -95,17 +95,16 @@ public class DiscussionService(IUnitOfWork unitOfWork) : IDiscussionService
 		}
 
 		var now = DateTime.UtcNow;
+		const ProjectStatus ideaStatus = ProjectStatus.Idea;
 
 		var project = new Project
 		{
 			Id = Guid.NewGuid(),
 			Title = title,
 			Description = NormalizeOptional(command.Description),
-			Status = command.Status,
+			Status = ideaStatus,
 			CreatedByUserId = command.CreatedByUserId,
-			CreatedAt = now,
-			ApprovedAt = command.Status == ProjectStatus.Active ? now : null,
-			ArchivedAt = command.Status == ProjectStatus.Archived ? now : null
+			CreatedAt = now
 		};
 
 		await _unitOfWork.Projects.AddAsync(project, cancellationToken);
@@ -116,7 +115,7 @@ public class DiscussionService(IUnitOfWork unitOfWork) : IDiscussionService
 			ProjectId = project.Id,
 			Status = project.Status,
 			ChangedByUserId = command.CreatedByUserId,
-			ChangeComment = "Идея создана",
+			ChangeComment = "РРґРµСЏ СЃРѕР·РґР°РЅР°",
 			ChangedAt = now
 		}, cancellationToken);
 
