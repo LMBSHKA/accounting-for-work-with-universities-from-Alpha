@@ -85,6 +85,49 @@ public class ProjectService(IUnitOfWork unitOfWork) : IProjectService
 		return true;
 	}
 
+	public async Task<bool> UpdateStatusAsync(UpdateProjectStatusCommand command, CancellationToken cancellationToken = default)
+	{
+		if (command.ProjectId == Guid.Empty || command.ChangedByUserId == Guid.Empty || !Enum.IsDefined(command.Status))
+		{
+			return false;
+		}
+
+		var project = await _unitOfWork.Projects.GetByIdAsync(command.ProjectId, cancellationToken);
+		if (project is null)
+		{
+			return false;
+		}
+
+		var now = DateTime.UtcNow;
+		project.Status = command.Status;
+		project.UpdatedAt = now;
+
+		if (command.Status == ProjectStatus.Active && project.ApprovedAt is null)
+		{
+			project.ApprovedAt = now;
+		}
+
+		if (command.Status == ProjectStatus.Archived && project.ArchivedAt is null)
+		{
+			project.ArchivedAt = now;
+		}
+
+		_unitOfWork.Projects.Update(project);
+
+		await _unitOfWork.ProjectStatusHistory.AddAsync(new ProjectStatusHistory
+		{
+			Id = Guid.NewGuid(),
+			ProjectId = project.Id,
+			Status = command.Status,
+			ChangedByUserId = command.ChangedByUserId,
+			ChangeComment = null,
+			ChangedAt = now
+		}, cancellationToken);
+
+		await _unitOfWork.SaveChangesAsync(cancellationToken);
+		return true;
+	}
+
 	public async Task<IReadOnlyCollection<ProjectStatusHistoryResult>?> GetStatusHistoryAsync(Guid projectId, CancellationToken cancellationToken = default)
 	{
 		var project = await _unitOfWork.Projects.GetByIdAsync(projectId, cancellationToken);

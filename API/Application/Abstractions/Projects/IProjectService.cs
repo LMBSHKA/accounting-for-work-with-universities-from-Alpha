@@ -9,4 +9,5 @@ public interface IProjectService
 	Task<GetProjectsResult> GetProjectsAsync(GetProjectsQuery query, CancellationToken cancellationToken = default);
 	Task<bool> CompleteProjectAsync(Guid projectId, Guid changedByUserId, CancellationToken cancellationToken = default);
 	Task<IReadOnlyCollection<ProjectStatusHistoryResult>?> GetStatusHistoryAsync(Guid projectId, CancellationToken cancellationToken = default);
+	Task<bool> UpdateStatusAsync(UpdateProjectStatusCommand command, CancellationToken cancellationToken = default);
 }

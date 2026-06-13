@@ -88,6 +88,48 @@ public class ProjectsController(IProjectService projectService) : ControllerBase
 		});
 	}
 	/// <summary>
+	/// Обновление статуса проекта.
+	/// Можно перевести проект из любого статуса в любой другой статус.
+	/// </summary>
+	[EndpointSummary("Обновление статуса проекта")]
+	[HttpPatch("{projectId:guid}/status")]
+	public async Task<IActionResult> UpdateStatus(
+		Guid projectId,
+		[FromBody] UpdateProjectStatusRequest request,
+		CancellationToken cancellationToken)
+	{
+		if (!Enum.IsDefined(request.Status))
+		{
+			ModelState.AddModelError(nameof(request.Status), "Project status is invalid.");
+		}
+
+		if (!ModelState.IsValid)
+		{
+			return ValidationProblem(ModelState);
+		}
+
+		var userIdValue = User.FindFirstValue("userId") ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
+		if (!Guid.TryParse(userIdValue, out var userId))
+		{
+			return Unauthorized(new { message = "User identifier claim is missing." });
+		}
+
+		var isSuccess = await _projectService.UpdateStatusAsync(new UpdateProjectStatusCommand
+		{
+			ProjectId = projectId,
+			Status = request.Status,
+			ChangedByUserId = userId
+		}, cancellationToken);
+
+		if (!isSuccess)
+		{
+			return NotFound(new { message = "Project was not found." });
+		}
+
+		return NoContent();
+	}
+
+	/// <summary>
 	/// Завершение проекта со страницы команды.
 	/// После вызова статус проекта становится 4 — Completed.
 	/// </summary>
